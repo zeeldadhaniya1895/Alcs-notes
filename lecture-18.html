@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lecture 18: Clusters, Quotient Frames, Skeletons, Generated Subframes">
+    <title>Lecture 18: Clusters - ALCS Handbook</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
+
+    <h1>Lecture 18: Clusters, Quotient Frames, Skeletons, Generated Subframes</h1>
+    
+    <p><strong>What this lecture covers:</strong> (1) clusters in transitive frames, (2) points in a cluster agree on □φ and ◇φ, (3) quotient frame and skeleton, (4) quasi-orders and the three types of cluster, (5) an example refuting the McKinsey formula, (6) a preview of truth-preserving operations, (7) closure notation X↑ω, X⇑, (8) generated subframes, roots, final/last points, covers.</p>
+    
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every topic has three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise definition or proof (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building-with-doors story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words, without the room picture.</li>
+    </ol>
+    
+    <p><strong>Quick recap:</strong> x↑ = successors of x (one step), x↑ⁿ = points reachable in exactly n steps, x↓ = predecessors. From Lecture 17: on a transitive frame, □ψ at x passes forward to every successor of x, and ◇ψ at x passes backward to every predecessor. Room picture: rooms = worlds, one-way doors = R, lights = where p is true.</p>
+    
+    <p><strong>Notation notes (read from handwriting).</strong></p>
+    <ul>
+        <li>The board draws some arrows with an <strong>extra bar</strong>. I write these as <strong>x⇑</strong> and <strong>x⇓</strong> (see Section 7).</li>
+        <li>The skeleton is written ρ𝔉 = ⟨ρW, ρR⟩ (the board's letter looks like ρ).</li>
+        <li>Where the board is incomplete or illegible I say so, and I do not guess.</li>
+    </ul>
+
+    <hr>
+
+    <h2>1. Clusters</h2>
+
+    <h3>Math</h3>
+    <p>Let 𝔉 = ⟨W,R⟩ be a <strong>transitive</strong> frame. Define a relation <strong>∼</strong> on W by</p>
+    <blockquote>
+        <p><strong>x ∼ y iff x = y, or (xRy and yRx).</strong></p>
+    </blockquote>
+    <p>Then ∼ is an <strong>equivalence relation</strong> (proof in the self-test). Its equivalence classes are called <strong>clusters</strong>. The cluster containing x is denoted <strong>C(x)</strong>.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> two rooms are "mates" if they are the same room, or if you can walk from each to the other by a single door. A <strong>cluster</strong> is a <strong>lounge</strong>: a group of rooms where you can get from any room to any other (and back) in one step. Every room belongs to exactly one lounge (possibly a lounge of just itself).</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> ∼ groups together points that <strong>see each other mutually</strong>. Transitivity of R is what makes this grouping consistent (if x and y see each other and y and z see each other, then x and z see each other). Every point belongs to exactly one cluster, so the clusters partition W. Clusters turn a possibly messy transitive frame into something much simpler: a collection of blobs.</p>
+    </blockquote>
+
+    <h2>2. Points of one cluster agree on □φ and ◇φ</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> Let x be a point in a model 𝔐 built on a <strong>transitive</strong> frame, and φ an arbitrary formula. Then for <strong>every y ∈ C(x)</strong>:</p>
+    <blockquote>
+        <p>(𝔐,x) ⊨ □φ <strong>iff</strong> (𝔐,y) ⊨ □φ, (𝔐,x) ⊨ ◇φ <strong>iff</strong> (𝔐,y) ⊨ ◇φ.</p>
+    </blockquote>
+
+    <p><strong>Proof.</strong> Let y ∈ C(x). If y = x there is nothing to prove. Otherwise xRy and yRx, so y ∈ x↑ and x ∈ y↑.</p>
+    <ul>
+        <li>By the Lecture 17 result (transitive frames), (𝔐,x) ⊨ □φ implies (𝔐,y) ⊨ □φ for every y ∈ x↑. Since also x ∈ y↑, the same result gives the converse. So □φ holds at x iff it holds at y.</li>
+        <li>For ◇: the Lecture 17 result says (𝔐,x) ⊨ ◇φ implies (𝔐,y) ⊨ ◇φ for every y ∈ x↓. Since xRy and yRx, we have y ∈ x↓ and x ∈ y↓, so the implication goes both ways. ∎</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> inside a lounge, every room sees the same set of "outside rooms through doors", because doors to anything one lounge-mate reaches are also available (via shortcuts) to the others. So "all doors lead to lit rooms" has the <strong>same answer in every room of the lounge</strong>, and "some door leads to a lit room" too.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the successors of x and of any y in its cluster are essentially the same set (by transitivity and mutual access). Since □ and ◇ only look at successors, they cannot tell cluster-mates apart. <strong>Warning:</strong> this says nothing about the formula φ itself. Cluster-mates can disagree on a plain variable p. Only formulas that <strong>begin with □ or ◇</strong> are guaranteed to agree.</p>
+    </blockquote>
+
+    <h2>3. Quotient frame and skeleton</h2>
+
+    <h3>Math</h3>
+    <p>Let 𝔉 be a transitive frame. The <strong>quotient frame of 𝔉 with respect to ∼</strong> is ⟨W/∼, R/∼⟩ where</p>
+    <ul>
+        <li><strong>W/∼ = { C(x) : x ∈ W }</strong> (the set of clusters)</li>
+        <li><strong>C(x) (R/∼) C(y) iff xRy</strong></li>
+    </ul>
+    <p>It is called the <strong>skeleton</strong> of 𝔉 and is denoted <strong>ρ𝔉 = ⟨ρW, ρR⟩</strong>.</p>
+
+    <p><strong>Facts.</strong></p>
+    <ol>
+        <li>The definition does not depend on which representatives x, y are chosen. (If x ∼ x′, y ∼ y′ and xRy, then x′Rx, xRy, yRy′ give x′Ry′ by transitivity, or one of the pairs is equal.)</li>
+        <li><strong>The skeleton ρ𝔉 is antisymmetric:</strong> if C(x) ρR C(y) and C(y) ρR C(x), then xRy and yRx, so x ∼ y, so C(x) = C(y).</li>
+        <li><strong>If R is reflexive, then ρ𝔉 is partially ordered by ρR</strong> (reflexive, transitive, antisymmetric).</li>
+    </ol>
+    <p><em>(The board says "every frame", but the construction is stated for transitive frames, so I read it that way.)</em></p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> <strong>collapse each lounge into one big room</strong> and keep a door between two big rooms whenever there was a door between rooms of the two lounges. The result is the skeleton: the same building, but with every lounge shrunk to a single node. In the skeleton you can never walk from a big room to a different big room and back again (that is antisymmetry), because then they would have been the same lounge.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the skeleton is the <strong>quotient of the frame by the cluster relation</strong>, exactly like quotienting a set by an equivalence relation. It removes the "mutual access" detail and keeps only the one-directional structure between clusters. That is why it is antisymmetric: all two-way connections have been absorbed inside clusters. If R was already reflexive (a quasi-order, see next section), the skeleton becomes a genuine <strong>partial order</strong>.</p>
+    </blockquote>
+
+    <h2>4. Quasi-orders and the three types of cluster</h2>
+
+    <h3>Math</h3>
+    <p>A <strong>reflexive and transitive</strong> binary relation is called a <strong>quasi-order</strong> (or <strong>preorder</strong>).</p>
+    <p>In a transitive frame there are <strong>three types of cluster</strong>:</p>
+    <ol>
+        <li><strong>Degenerate cluster:</strong> consists of a <strong>single irreflexive point</strong>.</li>
+        <li><strong>Simple cluster:</strong> consists of a <strong>single reflexive point</strong>.</li>
+        <li><strong>Proper cluster:</strong> contains <strong>at least two (reflexive) points</strong>.</li>
+    </ol>
+    <p>A proper cluster with n points is drawn as a <strong>circled n</strong>, written ⓝ.</p>
+
+    <p><strong>Why proper clusters consist of reflexive points:</strong> if x ∼ y with x ≠ y, then xRy and yRx, so xRx by transitivity (and likewise yRy).</p>
+    
+    <p><em>(The board also has two small sketches under this: a bullet at the bottom with two arrows going up to cluster or point symbols. The labels are not legible, so I don't interpret them.)</em></p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> the three kinds of room-groups: (1) a <strong>corridor room</strong>: a lone room with no door to itself; (2) a <strong>one-room lounge</strong>: a lone room with a self-door; (3) a <strong>real lounge</strong> of two or more rooms, all with doors to each other and to themselves. A real lounge is drawn as one circle with its size written inside.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> every cluster has exactly one of these three shapes. The only way a point can be irreflexive in a transitive frame is to be alone in its cluster. As soon as two points see each other, both automatically see themselves. This three-way classification is a useful tool because later arguments about transitive frames can be done cluster by cluster.</p>
+    </blockquote>
+
+    <h2>5. Example: the McKinsey formula on a 2-point cluster</h2>
+
+    <h3>Math</h3>
+    <p><strong>Example.</strong> Frame 𝔉 = ⟨W,R⟩ with W = {a₁, a₂}, R = {⟨aᵢ,aⱼ⟩ : i, j = 1, 2} (every point sees every point, including itself), and valuation V(p) = {a₁}. This is a <strong>proper 2-point cluster ②</strong>.</p>
+
+    <p>The formula <strong>□◇p → ◇□p</strong> (known as the <strong>McKinsey formula</strong>; the board's name for it is hard to read) is <strong>false at both a₁ and a₂</strong>:</p>
+    <ul>
+        <li>◇p is true at a₁ and at a₂ (each sees a₁, where p holds).</li>
+        <li>So □◇p is true at both (all successors satisfy ◇p).</li>
+        <li>□p is false at both, since a₂ ⊭ p and each point sees a₂.</li>
+        <li>So ◇□p is false at both (no successor satisfies □p).</li>
+        <li>Hence □◇p → ◇□p is <strong>false at a₁ and at a₂</strong>.</li>
+    </ul>
+
+    <p><strong>Definition (end of the page).</strong> Let <strong>K_ML = { φ ∈ Form_ML : 𝔉 ⊨ φ for all frames 𝔉 }</strong>, the set of formulas valid on <strong>every frame</strong> (this is the logic <strong>K</strong> from your revision). Since the example refutes □◇p → ◇□p on a frame, <strong>□◇p → ◇□p ∉ K_ML</strong>.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> two rooms with doors between them and back to themselves. The p light is on in room 1 only. From either room you can reach a lit room, so "some door is lit" holds everywhere and "all rooms can see a lit room" holds everywhere. But there is <strong>no room from which all doors lead to lit rooms</strong>, because room 2 is dark and both rooms can walk into it. So the formula fails.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the example also illustrates Section 2: a₁ and a₂ <strong>agree on □p, ◇p, □◇p, ◇□p</strong> (all four are false or true at both), yet they <strong>disagree on p</strong>. The formula is not valid even on this very simple frame (an equivalence relation), which shows how much stronger "valid on all frames" is than "true in one model". One counter-model on one frame is enough to show a formula is not in K_ML.</p>
+    </blockquote>
+
+    <h2>6. Preview: truth-preserving operations</h2>
+    <p>The next topic, which the board only names at this point, is <strong>truth-preserving operations</strong>, i.e. ways of building new frames or models from old ones without changing which formulas are true:</p>
+    <ul>
+        <li><strong>generating subframes</strong> (keep only what is reachable from some points),</li>
+        <li><strong>reduction</strong>,</li>
+        <li><strong>disjoint union</strong> (Lecture 16 reference supplement, Section 8.3).</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> three ways to change the building without changing the truth: (1) <strong>demolish everything you cannot reach</strong> from where you stand, (2) <strong>merge look-alike rooms</strong> (reduction), (3) <strong>put buildings side by side</strong> with no doors between them.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these operations are the tools for comparing frames. Generated subframes are developed in the rest of this lecture. In other textbooks, "reduction" appears as a <strong>p-morphism</strong> (bounded morphism); the lecture only names it here, so I do not state its definition. It will come in a later lecture.</p>
+    </blockquote>
+
+    <h2>7. Closure notation: X↑ⁿ, X↑ω, X⇑</h2>
+
+    <h3>Math</h3>
+    <p>For a frame 𝔉 = ⟨W,R⟩ and <strong>X ⊆ W</strong>:</p>
+    <ul>
+        <li><strong>X↑ⁿ</strong> = the set of points y with xRⁿy <strong>for some x ∈ X</strong> (n-step successors of X); <strong>X↓ⁿ</strong> = the same backwards. <em>(The board's line for X↓ⁿ is blank; this is the symmetric version.)</em></li>
+        <li><strong>X↑ω = ⋃_{n ≥ 1} X↑ⁿ</strong> (everything reachable in <strong>one or more</strong> steps)</li>
+        <li><strong>X↓ω = ⋃_{n ≥ 1} X↓ⁿ</strong> (everything from which X is reachable in one or more steps)</li>
+        <li><strong>Reflexive versions</strong> (arrow drawn with a bar; I write ⇑ and ⇓): <strong>X⇑ξ = X ∪ X↑ξ</strong> and <strong>X⇓ξ = X ∪ X↓ξ</strong>, for 1 ≤ ξ ≤ ω. In particular <strong>X⇑ = X ∪ X↑ω</strong> (zero or more steps).</li>
+    </ul>
+
+    <p><strong>Example (board).</strong> Non-transitive frame W = {a,b,c}, R = {(a,b),(b,c)}.</p>
+    <ul>
+        <li>a↑ = {b} (one step only)</li>
+        <li><strong>upward closure of a</strong> = a⇑ = {a} ∪ a↑ω = <strong>{a,b,c}</strong></li>
+        <li>a↓ = ∅</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> x↑ = rooms behind the doors out of x. x↑ω = rooms you can reach by walking <strong>any positive number of doors</strong>. x⇑ = the same plus x itself (<strong>walking zero doors is allowed</strong>). X⇑ for a set of rooms: everything you can reach starting from any of them.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this is the <strong>reachability closure</strong>. X↑ω is the transitive closure applied to X, and X⇑ is the reflexive-transitive closure. Distinguish three things: <strong>x↑</strong> (one step), <strong>x↑ω</strong> (one or more steps, may not contain x), and <strong>x⇑</strong> (zero or more steps, always contains x). In the example, the single-step set {b} is much smaller than the closure {a,b,c}.</p>
+    </blockquote>
+
+    <h2>8. Generated subframes, roots, final and last points, covers</h2>
+
+    <h3>Math</h3>
+    <ul>
+        <li>The <strong>upward closed set generated by X in 𝔉</strong> is <strong>X⇑</strong> (= X ∪ X↑ω). It is "upward closed": once you are in it, every successor is also in it.</li>
+        <li>The <strong>subframe generated by X</strong> is the subframe induced by X⇑ (standard definition; the board states it only for a point x).</li>
+        <li>A point x is a <strong>root</strong> of 𝔉 if <strong>the subframe of 𝔉 generated by x is 𝔉 itself</strong>, i.e. <strong>x⇑ = W</strong> (every point is reachable from x or equals x). A frame with a root is called <strong>rooted</strong>.</li>
+        <li>The <strong>cluster generated by a point x</strong> is
+            <blockquote>
+                <p><strong>C(x) = x⇑ ∩ x⇓</strong></p>
+            </blockquote>
+            (points reachable from x, or x itself, <strong>and</strong> from which x is reachable, or x itself).
+        </li>
+        <li>If 𝔉 is transitive: <strong>x is a final point and C(x) a final cluster in X</strong> if
+            <blockquote>
+                <p><strong>x⇑ ∩ X = C(x) ∩ X</strong></p>
+            </blockquote>
+            i.e. inside X nothing lies strictly above x outside its own cluster.
+        </li>
+        <li><strong>x is a last point and C(x) the last cluster in X</strong> if <strong>X ⊆ x⇓</strong> (every point of X is below or equal to x).</li>
+        <li>A set <strong>X ⊆ W is a cover for Y ⊆ W</strong> if <strong>Y ⊆ X⇓</strong> (every point of Y can reach some point of X, or is in X).</li>
+    </ul>
+
+    <p><strong>Board example (partly legible).</strong> A <strong>non-transitive</strong> frame drawn as several vertical chains (some start with a 2-point cluster, some are infinite, some have n, n−1, …, 1 labelled along them). The text says the frame is <strong>generated by a as well as by b</strong>, so <strong>𝔉 is rooted with a and b both roots</strong>. The labels of the individual diagrams are not legible, so I don't interpret them. What I can derive: if both a and b are roots, then b ∈ a⇑ and a ∈ b⇑. So there is a walk from a to b and a walk from b to a (or a = b).</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> the <strong>generated subframe</strong> of x is the part of the building you can <strong>reach by walking from x</strong>; demolish the rest. A <strong>root</strong> is a room from which you can reach <strong>every</strong> room of the building (so the building is just "the part reachable from x"). The <strong>cluster generated by x</strong> is x's lounge: rooms you can walk to <strong>and</strong> that can walk back to you. A <strong>final point</strong> is a "top floor" room: within the chosen rooms X, nothing is strictly above it. A <strong>last point</strong> is a room such that <strong>all</strong> rooms of X can reach it (it is below-or-equal by everything). A <strong>cover</strong> for Y is a set of rooms X such that every room of Y can reach some room of X.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these are all <strong>order-theoretic words</strong> for talking about reachability. Final = <strong>maximal</strong> (nothing strictly above in X), last = <strong>greatest</strong> (everything in X is below it); a final point need not be last, and there can be several final clusters. Generated subframes are the main tool of the next lectures: by the locality idea of Lecture 17, truth at x only depends on what x can reach, so cutting the frame down to x⇑ should not change the truth of modal formulas at x. (The lecture sets this up here; it states the preservation result next.)</p>
+    </blockquote>
+
+    <h2>Worked example: clusters, skeleton, roots (my own)</h2>
+    <p><strong>Frame.</strong> W = {a, b, c, d}, R = { aRa, aRb, bRa, bRb, aRc, bRc, aRd, bRd, dRd }. Drawn: a proper 2-cluster ② = {a,b} at the bottom, with arrows up to c (a bullet) and d (a circle).</p>
+    <ul>
+        <li><strong>Transitive?</strong> Yes: whatever a or b reach (a, b, c, d) is reached from both, and dRd ∧ dRd gives dRd.</li>
+        <li><strong>Clusters:</strong> a ∼ b (aRb and bRa). C(a) = C(b) = {a,b} is <strong>proper</strong> (a and b are reflexive). C(c) = {c} is <strong>degenerate</strong> (c has no self-loop). C(d) = {d} is <strong>simple</strong> (dRd).</li>
+        <li><strong>Skeleton ρ𝔉:</strong> nodes A = {a,b}, C, D. Arrows: A ρR A, A ρR C, A ρR D, D ρR D. C has no arrows. It is <strong>antisymmetric</strong>, but <strong>not a partial order</strong> since C is not reflexive (R was not reflexive).</li>
+        <li><strong>Roots:</strong> a⇑ = {a} ∪ a↑ω = {a,b,c,d} = W, so <strong>a is a root</strong>; so is b. c and d are not roots.</li>
+        <li><strong>Final points in W:</strong> c⇑ = {c} = C(c), so c is final; d⇑ = {d} = C(d), so d is final. a is not final because a⇑ = W ≠ C(a) = {a,b}.</li>
+        <li><strong>Last point in W?</strong> None: c⇓ = {c,a,b} does not contain d, and d⇓ = {d,a,b} does not contain c.</li>
+        <li><strong>Cover:</strong> {c,d} covers W, since {c,d}⇓ = {c,d,a,b} = W. {a} does not cover W, since {a}⇓ = {a,b}.</li>
+    </ul>
+
+    <h2>Common mistakes</h2>
+    <ol>
+        <li><strong>Believing cluster-mates satisfy the same formulas.</strong> Only □φ and ◇φ are guaranteed to agree. Plain variables (and anything else) can differ (Example 5).</li>
+        <li><strong>Thinking x ∼ y only needs xRy.</strong> For x ≠ y you need <strong>both</strong> xRy and yRx.</li>
+        <li><strong>Putting an irreflexive point inside a proper cluster.</strong> All points of a proper cluster are reflexive.</li>
+        <li><strong>Confusing x↑ with x↑ω with x⇑.</strong> One step, one or more steps, zero or more steps.</li>
+        <li><strong>Confusing final and last.</strong> Final (maximal): nothing strictly above in X. Last (greatest): every point of X is below it.</li>
+        <li><strong>Calling the skeleton a partial order always.</strong> It is a partial order only when R is reflexive; otherwise irreflexive clusters appear as irreflexive nodes.</li>
+        <li><strong>Concluding "valid" from one model.</strong> The McKinsey example shows a formula is <strong>not in K_ML</strong>. Validity needs every frame.</li>
+    </ol>
+
+    <h2>Self-test (answers below)</h2>
+    <ol>
+        <li>Show that ∼ is an equivalence relation on a transitive frame.</li>
+        <li>Why must every point of a proper cluster be reflexive?</li>
+        <li>In the 2-point cluster model of Section 5 (V(p) = {a₁}), do a₁ and a₂ agree on p? On □p? On ◇□p?</li>
+        <li>For the chain frame W = {a,b,c}, R = {(a,b),(b,c)} compute {b}⇑. Is b a root? Which point is a root?</li>
+        <li>In the worked example, which clusters are final, and is there a last cluster?</li>
+    </ol>
+
+    <p><strong>Answers</strong></p>
+    <ol>
+        <li><strong>Reflexive:</strong> x = x, so x ∼ x. <strong>Symmetric:</strong> the definition "x = y, or (xRy and yRx)" is symmetric in x and y. <strong>Transitive:</strong> let x ∼ y and y ∼ z. If any two of x, y, z are equal, it is immediate. Otherwise xRy, yRx, yRz, zRy. Then xRz (xRy, yRz) and zRx (zRy, yRx) by transitivity, so x ∼ z.</li>
+        <li>If x ∼ y with x ≠ y, then xRy and yRx. By transitivity xRy ∧ yRx gives xRx, and symmetrically yRy. So both are reflexive.</li>
+        <li>They <strong>disagree on p</strong> (a₁ ⊨ p, a₂ ⊭ p). They <strong>agree on □p</strong> (false at both) and on <strong>◇□p</strong> (false at both), as Section 2 predicts for formulas beginning with □ or ◇.</li>
+        <li>{b}⇑ = {b} ∪ {c} = <strong>{b,c}</strong>. Since {b,c} ≠ W, b is <strong>not</strong> a root. The root is <strong>a</strong>, since a⇑ = {a,b,c} = W. (The frame is not transitive, so these are plain reachability closures.)</li>
+        <li>Final clusters: <strong>{c}</strong> (degenerate) and <strong>{d}</strong> (simple). There is <strong>no last cluster</strong>: a last point x needs W ⊆ x⇓, but c⇓ = {c,a,b} misses d, d⇓ = {d,a,b} misses c, and a⇓ = b⇓ = {a,b} misses both.</li>
+    </ol>
+
+    <h2>One-page summary</h2>
+    <ul>
+        <li><strong>Cluster:</strong> for a transitive frame, x ∼ y iff x = y or (xRy and yRx). Clusters are the ∼-classes, C(x) the class of x.</li>
+        <li><strong>Same-cluster points agree on □φ and ◇φ</strong> (via the Lecture 17 persistence result), but not necessarily on φ.</li>
+        <li><strong>Quotient / skeleton ρ𝔉:</strong> nodes = clusters, C(x) ρR C(y) iff xRy. <strong>Antisymmetric</strong>; a <strong>partial order</strong> if R is reflexive.</li>
+        <li><strong>Quasi-order = reflexive + transitive.</strong> <strong>Three cluster types:</strong> degenerate (one irreflexive point), simple (one reflexive point), proper (≥ 2 reflexive points, drawn ⓝ).</li>
+        <li><strong>McKinsey □◇p → ◇□p</strong> fails on the 2-point cluster with V(p) = {a₁}, so it is <strong>not in K_ML</strong> (the set of formulas valid on all frames).</li>
+        <li><strong>Truth-preserving operations:</strong> generated subframes, reduction, disjoint union.</li>
+        <li><strong>Notation:</strong> X↑ω (one or more steps), X⇑ = X ∪ X↑ω (zero or more). <strong>Generated subframe</strong> = induced by X⇑. <strong>Root:</strong> x⇑ = W. <strong>C(x) = x⇑ ∩ x⇓.</strong></li>
+        <li><strong>Final</strong> (nothing strictly above in X), <strong>last</strong> (X ⊆ x⇓), <strong>cover</strong> (Y ⊆ X⇓).</li>
+    </ul>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
