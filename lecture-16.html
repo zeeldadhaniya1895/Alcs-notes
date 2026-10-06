@@ -7,13 +7,39 @@
     <title>Lecture 16: Modal Logic - ALCS Handbook</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --primary-color: #2c3e50;
-            --secondary-color: #ecf0f1;
-            --accent-color: #e74c3c;
-            --link-color: #3498db;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
@@ -22,84 +48,198 @@
             margin: 0 auto;
             padding: 2rem;
             line-height: 1.7;
+            font-size: 1.05rem;
         }
-        h1, h2, h3 {
-            color: var(--primary-color);
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
-        h1 {
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-        }
-        h2 {
-            margin-top: 2.5rem;
-            border-bottom: 1px solid var(--secondary-color);
-            padding-bottom: 0.3rem;
-        }
-        blockquote {
-            background: var(--secondary-color);
-            border-left: 4px solid var(--accent-color);
-            margin: 1.5rem 0;
-            padding: 1rem 1.5rem;
-            border-radius: 0 4px 4px 0;
-            font-style: italic;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }
-        th, td {
-            border: 1px solid var(--secondary-color);
-            padding: 0.75rem;
-            text-align: left;
-        }
-        th {
-            background-color: var(--secondary-color);
-            font-weight: 600;
-        }
-        code {
-            background: #f4f4f4;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: monospace;
-        }
+
         .nav-link {
-            display: inline-block;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: var(--link-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
+
         .nav-link:hover {
-            text-decoration: underline;
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
             color: var(--primary-color);
         }
-        .highlight {
-            background-color: #fff3cd;
-            padding: 0.1rem 0.2rem;
-            border-radius: 3px;
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <a href="index.html" class="nav-link">&larr; Back to Contents</a>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
 
     <h1>Lecture 16: Modal Logic, Language, Frames, Models, Truth</h1>
     
     <p><strong>What this lecture covers:</strong> (1) why modal logic exists, (2) its language, (3) Kripke frames, (4) valuations and models, (5) the truth relation, (6) modal degree, (7) n-step accessibility and properties of R, and (8) a supplement from the reference book.</p>
     
     <p><em><strong>Notation note:</strong> I read this from handwritten board pages. Where a symbol was ambiguous I say so.</em></p>
+
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every topic is explained in three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise definition or result (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building-with-doors story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words, with no room picture (for real understanding and for CS meaning).</li>
+    </ol>
+    
+    <hr>
 
     <h2>The big picture (read this first)</h2>
     <p>Think of a <strong>building with rooms and one-way doors</strong>.</p>
@@ -128,7 +268,10 @@
 
     <h2>1. Motivation: necessary vs. possible</h2>
     <blockquote>
-        <strong>In plain words:</strong> ordinary logic only answers "true or false?". Modal logic lets you say <strong>"must be true"</strong> or <strong>"might be true"</strong>. "7 is prime" is true no matter where or when you ask, so it is <em>necessary</em>. "It is raining" is true in some places and times and false in others, so it is only <em>possible</em>. Modal logic gives a clean way to talk about all those different places and times at once.
+        <p><strong>Room-and-light picture:</strong> ordinary logic only answers "true or false?". Modal logic lets you say <strong>"must be true"</strong> or <strong>"might be true"</strong>. "7 is prime" is true no matter where or when you ask, so it is <em>necessary</em>. "It is raining" is true in some places and times and false in others, so it is only <em>possible</em>. Modal logic gives a clean way to talk about all those different places and times at once.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> Classical logic treats every statement as simply true or false. But in real reasoning some statements could not have been otherwise (mathematical facts, laws), while others are <em>contingent</em>: they depend on the circumstances, such as time, place, or the current state of a program. Modal logic evaluates a statement <strong>relative to a circumstance</strong> and adds two new words: <strong>necessarily</strong> (true in <em>every</em> circumstance we consider) and <strong>possibly</strong> (true in <em>at least one</em>). In computer science the circumstances are usually program states, so □ reads "in every next state" and ◇ reads "in some next state". The same machinery also models time ("always / sometimes"), knowledge ("the agent knows"), and permission ("it is obligatory / allowed").</p>
     </blockquote>
     <p>Propositional logic only says whether a statement is true or false. <strong>Modal logic</strong> adds the ability to talk about <em>how</em> it is true: <strong>necessarily</strong> or <strong>possibly</strong>.</p>
     
@@ -149,7 +292,10 @@
 
     <h2>2. The modal language</h2>
     <blockquote>
-        <strong>In plain words:</strong> you take ordinary logic (and, or, not, if-then) and add <strong>one new symbol, □</strong>, which you can put in front of any formula to say "this is necessarily so". That's it. ◇ ("possibly") is not a new idea: "possibly p" just means "it is <em>not</em> necessary that p fails", which is ¬□¬p. The precedence rule means □ grabs only the thing right next to it, like a minus sign. So □p → □q ∨ □r reads: "<em>if</em> p is necessary, <em>then</em> either q is necessary or r is necessary."
+        <p><strong>Room-and-light picture:</strong> you take ordinary logic (and, or, not, if-then) and add <strong>one new symbol, □</strong>, which you can put in front of any formula to say "this is necessarily so". That's it. ◇ ("possibly") is not a new idea: "possibly p" just means "it is <em>not</em> necessary that p fails", which is ¬□¬p. The precedence rule means □ grabs only the thing right next to it, like a minus sign. So □p → □q ∨ □r reads: "<em>if</em> p is necessary, <em>then</em> either q is necessary or r is necessary."</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> This section is <strong>syntax</strong> only: how formulas are written, with no meaning yet. Modal logic is propositional logic plus one operator that takes a formula and produces a new formula. Because it only <em>adds</em> to propositional logic, every ordinary propositional formula is also a modal formula. <strong>Form_ML</strong> is the collection of all well-formed formulas, and <strong>Var_ML</strong> is the collection of basic statement symbols. The precedence rule exists only to save brackets. ◇ is <em>defined</em> from □ because "ψ is possible" says exactly "it is not the case that ψ is necessarily false". Keeping only one primitive operator is also useful for proofs: when you prove something by induction on formulas, you handle one modal case instead of two.</p>
     </blockquote>
     <p>Let <strong>L</strong> be the language of propositional logic. The <strong>propositional modal language ML</strong> is L enriched with:</p>
     <ul>
@@ -159,16 +305,19 @@
     
     <h3>Precedence convention</h3>
     <p>□ binds <strong>stronger</strong> than ∧, ∨, →, ↔ (like unary minus binds tighter than +). So</p>
-    <blockquote>□p → □q ∨ □r is an abbreviation for <strong>(□p) → ((□q) ∨ (□r))</strong></blockquote>
+    <blockquote><p>□p → □q ∨ □r is an abbreviation for <strong>(□p) → ((□q) ∨ (□r))</strong></p></blockquote>
     <p>Compare: <strong>¬□p</strong> (it is not necessary that p) vs <strong>□¬p</strong> (it is necessary that not-p). These are different. Example: "it is not necessary that it rains" is very different from "necessarily it does not rain".</p>
 
     <h3>◇ is defined, not primitive</h3>
-    <blockquote><strong>◇φ := ¬□¬φ</strong></blockquote>
+    <blockquote><p><strong>◇φ := ¬□¬φ</strong></p></blockquote>
     <p>Reading: "φ is possible" means "it is <em>not</em> necessary that φ fails." So ◇ is just shorthand; the only new primitive symbol is □.</p>
 
     <h2>3. Kripke frames</h2>
     <blockquote>
-        <strong>In plain words:</strong> a frame is just the <strong>floor plan</strong>: a non-empty set of rooms and some one-way doors. "Arbitrary" means the architect can draw any doors at all, including none, doors back to the same room, or doors in both directions. "y is accessible from x" simply means "there is a door from x to y". <strong>x↑</strong> is the list of rooms you can walk into from x. <strong>y↓</strong> is the list of rooms that have a door into y. The frame says nothing about what is true in the rooms.
+        <p><strong>Room-and-light picture:</strong> a frame is just the <strong>floor plan</strong>: a non-empty set of rooms and some one-way doors. "Arbitrary" means the architect can draw any doors at all, including none, doors back to the same room, or doors in both directions. "y is accessible from x" simply means "there is a door from x to y". <strong>x↑</strong> is the list of rooms you can walk into from x. <strong>y↓</strong> is the list of rooms that have a door into y. The frame says nothing about what is true in the rooms.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> A frame is the <strong>structure</strong> you reason over: a set of situations and a relation saying which situations are <em>relevant from</em> which. The relation R is where the <strong>meaning of "possible"</strong> lives, and different applications choose R differently. For time, xRy can mean "y is a later moment than x". For knowledge, it can mean "in x, the agent cannot rule out y". For programs, it means "y can follow x in one execution step". This is why modal logic is really a <em>family</em> of logics: change the properties of R and you change which statements about necessity are always true. A frame contains <strong>no facts</strong>, only the shape. The words successor and predecessor just mean "reachable from" and "leads to".</p>
     </blockquote>
     <p>A <strong>(modal Kripke) frame</strong> is a pair <strong>𝔉 = ⟨W, R⟩</strong> where:</p>
     <ul>
@@ -178,20 +327,32 @@
     
     <h2>4. Valuations and models</h2>
     <blockquote>
-        <strong>In plain words:</strong> now we switch the lights on. For each statement p, the valuation gives the list of rooms where p is true. The floor plan together with these lights is a <strong>model</strong>. The one rule difference from intuitionistic logic: there, once something became true it had to stay true in every room you could reach. Here there is <strong>no such rule</strong>. A room can have the rain light on while the next room has it off, which is exactly what we need for "raining now, not raining later".
+        <p><strong>Room-and-light picture:</strong> now we switch the lights on. For each statement p, the valuation gives the list of rooms where p is true. The floor plan together with these lights is a <strong>model</strong>. The one rule difference from intuitionistic logic: there, once something became true it had to stay true in every room you could reach. Here there is <strong>no such rule</strong>. A room can have the rain light on while the next room has it off, which is exactly what we need for "raining now, not raining later".</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> A frame has structure but no facts, so we add facts separately. A valuation assigns each basic statement p the <strong>set of situations in which p holds</strong>. Equivalent view: it gives every situation a list of which basic statements are true there. Structure plus facts is a model. Keeping the two apart matters, because the same structure can carry many different sets of facts, and later we will ask questions like "is this formula true no matter which facts we choose?" (that is <em>frame validity</em>). In modal logic V(p) can be <strong>any</strong> subset of W. There is no persistence rule, so a fact may hold now and fail next.</p>
     </blockquote>
     <p>Fix a modal language ML.</p>
     <ul>
         <li>A <strong>valuation</strong> in a frame 𝔉 = ⟨W, R⟩ is a map <strong>V : Var_ML → 2^W</strong>.</li>
         <li>A <strong>Kripke model</strong> is a pair <strong>𝔐 = ⟨𝔉, V⟩</strong> where 𝔉 is a frame and V is a valuation in 𝔉.</li>
     </ul>
-    <blockquote><strong>Model = frame + valuation.</strong> Frame = the shape. Valuation = which atomic facts hold at which point.</blockquote>
+    <blockquote><p><strong>Model = frame + valuation.</strong> Frame = the shape. Valuation = which atomic facts hold at which point.</p></blockquote>
 
     <h2>5. The truth relation</h2>
     <blockquote>
-        <strong>In plain words:</strong> to check a formula, <strong>stand in a room</strong> and apply these rules.
-        <br><br>
-        <strong>Dead-end room (no doors):</strong> □ is automatically true, because "every door leads to a lit room" has no counterexample. ◇ is automatically false, because there is no door to find.
+        <p><strong>Room-and-light picture:</strong> to check a formula, <strong>stand in a room</strong> and apply these rules.</p>
+        <ol>
+            <li>For a plain statement like p: look at the light in <em>this</em> room.</li>
+            <li>For and, or, not, if-then: use ordinary logic, looking <strong>only at this room</strong>.</li>
+            <li>For □ψ: list all doors out of this room, walk through each one, and check ψ in the room you land in. <strong>All</strong> must pass.</li>
+            <li>For ◇ψ: same, but <strong>at least one</strong> must pass.</li>
+        </ol>
+        <p>Nested formulas just repeat the walk. For □◇p: go through every door, and in each landing room check that <em>some</em> further door leads to a lit room.</p>
+        <p><strong>Dead-end room (no doors):</strong> □ is automatically true, because "every door leads to a lit room" has no counterexample. ◇ is automatically false, because there is no door to find. Think of "every student in an empty classroom passed": technically true, since nobody failed.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> Truth is no longer "p is true" but "<strong>p is true at x in model 𝔐</strong>", a statement about a <em>pair</em>. The definition goes by recursion on the formula, so every formula gets a definite truth value at every situation. The classical connectives are evaluated <strong>at the current situation only</strong>, exactly as in school logic. Only □ and ◇ look elsewhere, and they act like <strong>quantifiers restricted to accessible situations</strong>: □ψ says "for all y with xRy, ψ holds at y", and ◇ψ says "there exists y with xRy such that ψ holds at y". (A helpful way to see modal logic: it is a small fragment of first-order logic where you may only quantify over R-neighbours.) The dead-end rule is the same as in ordinary mathematics: a universal claim over an <strong>empty</strong> set is true, and an existence claim over an empty set is false. The shorthand x ⊨ ψ drops the model name, and the truth set V̄(ψ) = {x : x ⊨ ψ} collects all situations where ψ holds.</p>
     </blockquote>
     <p>Let x be a point of 𝔉. We define <strong>(𝔐, x) ⊨ ψ</strong>, read "<strong>ψ is true at world x in model 𝔐</strong>", by induction on ψ:</p>
     <table>
@@ -209,9 +370,35 @@
     <p><strong>Critical difference from intuitionistic logic:</strong> in intuitionistic logic, → and ¬ look at <em>all future points</em>. In modal logic, → and ¬ are <strong>classical and local</strong>: they look <strong>only at the current world x</strong>. Only □ and ◇ look at <em>other</em> worlds, and only at those <strong>directly accessible</strong> (one step) from x.</p>
 
     <h2>6. Modal degree</h2>
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> modal degree counts <strong>how many doors deep</strong> a formula looks. Plain statements look at no doors (degree 0). Each □ or ◇ stacked on top lets the formula look one door further. For □◇p: go through one door (□), then through another (◇), so it looks 2 doors deep. When two parts are joined by and/or/if-then, the formula is only as deep as its deepest part. A formula of degree 2 can never be affected by anything more than 2 doors away.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> Modal degree is a <strong>complexity measure</strong> for formulas, like the maximum nesting depth of loops in a program. It is defined by recursion: atoms have 0, joining formulas with ∧, ∨, → takes the maximum, and each □ or ◇ adds one. It matters for two reasons. First, it is a convenient number to do induction on. Second, it measures how far a formula can "see": whether a formula of degree n is true at x depends only on situations reachable within n steps of x. □ⁿ and ◇ⁿ are just names for applying the operator n times in a row.</p>
+    </blockquote>
     <p>The <strong>modal degree md(ψ)</strong> is the <strong>maximum nesting depth of modal operators</strong> in ψ.</p>
 
     <h2>7. n-step accessibility</h2>
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> xRⁿy means "you can get from x to y by walking exactly n doors" (rooms may repeat, so you can pass through the same room twice). Walking 0 doors means you haven't moved, so xR⁰y just means x is y. Then the shape words:</p>
+        <ul>
+            <li><strong>Transitive:</strong> whenever you can go x → y → z, there is also a <strong>shortcut door</strong> straight from x to z.</li>
+            <li><strong>Reflexive:</strong> every room has a door that leads back to itself.</li>
+            <li><strong>Irreflexive:</strong> <strong>no</strong> room has such a door.</li>
+            <li><strong>Intransitive:</strong> the opposite of transitive. Whenever you can go x → y → z, a straight door x → z is <strong>forbidden</strong>.</li>
+        </ul>
+        <p><strong>Why the four facts are true, in words:</strong></p>
+        <ol>
+            <li><em>Transitive means long walks can be shortened:</em> with shortcuts, you can fold a 5-door walk into a 4-door walk, then 3, and so on, until one door is left.</li>
+            <li><em>Transitive and reflexive means you can also stretch:</em> if every room has a door to itself, you can "stall" in a room as many times as you like, so a single door x → y can be padded into a walk of any length.</li>
+            <li><em>A room with a self-door can be left and re-entered forever:</em> just loop around n times.</li>
+            <li><em>Intransitive frames have no self-doors:</em> suppose room x has a door to itself. Then x → x → x is a two-step walk, and the intransitive rule would then forbid the door x → x. But it exists. Contradiction.</li>
+        </ol>
+        <p><strong>Careful:</strong> <em>irreflexive</em> means <strong>no</strong> room loops back. <em>Not reflexive</em> only means <strong>some</strong> room fails to.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> xRⁿy is simply the relation R <strong>composed with itself n times</strong>, and R⁰ is the identity relation (every point related only to itself). This lines up exactly with repeated modalities: □ⁿψ is true at x iff ψ holds at every y with xRⁿy. The properties (transitive, reflexive, irreflexive, intransitive) are just ways of classifying the <em>shape</em> of R, and each shape later matches a logical principle. For example, transitivity matches the axiom □p → □□p, and reflexivity matches □p → p (from your revision table). The facts proved here use only elementary reasoning. <strong>Transitive</strong> means composing R with itself never gives anything new, so Rⁿ ⊆ R. <strong>Reflexive</strong> means you can insert identity steps to lengthen a path, so R ⊆ Rⁿ. Intransitive ⇒ irreflexive is a proof by contradiction. Finally, "irreflexive" is ∀x ¬(xRx) while "not reflexive" is ¬∀x (xRx), which is ∃x ¬(xRx); the position of the negation is the whole difference.</p>
+    </blockquote>
     <p><strong>y is accessible from x in n &gt; 0 steps</strong>, written <strong>xRⁿy</strong>, or <strong>y ∈ x↑ⁿ</strong>, or <strong>x ∈ y↓ⁿ</strong>, if there exist points z₁, …, z_{n−1} ∈ W (<strong>not necessarily distinct</strong>) such that <strong>xRz₁, z₁Rz₂, …, z_{n−1}Ry</strong> (a path of n arrows).</p>
 
     <h3>Properties of R</h3>
@@ -225,8 +412,56 @@
     </table>
     
     <h2>Full worked example</h2>
+    <blockquote>
+        <p><strong>Room-and-light walk-through:</strong> three rooms <strong>a, b, c</strong>. Room a has one door to b. Room b has one door to c. Room c has one door <strong>back to itself</strong>. The <em>p</em> light is on in b and c. The <em>q</em> light is on only in c.</p>
+        <ul>
+            <li>From a, the only door goes to b, and b has p lit. So <strong>□p is true</strong> (all doors lead to lit rooms) and <strong>◇p is true</strong> (some door does).</li>
+            <li>But b has no q light. So <strong>□q is false</strong> at a, and <strong>◇q is false</strong> too, since the only door leads to a dark-for-q room.</li>
+            <li>Two doors from a you reach c (a→b→c), and c has q. So <strong>□□q is true</strong> at a.</li>
+            <li>Room c loops to itself and has q, so q stays true however many steps you take from c.</li>
+            <li>Not transitive: you can go a→b→c but there is no shortcut door a→c.</li>
+        </ul>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> The model in set notation: W = {a,b,c}, R = {(a,b),(b,c),(c,c)}, V(p) = {b,c}, V(q) = {c}. The standard method is to compute <strong>truth sets bottom-up</strong>, which is exactly what the recursive definition of truth does. A world x belongs to V̄(◇ψ) iff x has some R-successor in V̄(ψ), and to V̄(□ψ) iff <strong>all</strong> R-successors of x lie in V̄(ψ).</p>
+        <ul>
+            <li>V̄(p) = {b,c} and V̄(q) = {c}</li>
+            <li>V̄(◇p) = {a,b,c} (every world has a successor in {b,c}) and V̄(□p) = {a,b,c} (every successor already lies in {b,c})</li>
+            <li>V̄(◇q) = {b,c} (a's only successor b is outside {c}) and V̄(□q) = {b,c}</li>
+            <li>V̄(□□q) = {a,b,c}, since all successors of every world lie in V̄(□q) = {b,c}</li>
+        </ul>
+        <p>So a ⊨ □□q but a ⊭ □q, which matches the table below.</p>
+    </blockquote>
     <p><strong>Model:</strong> W = {a, b, c}, R = {(a,b), (b,c), (c,c)}, V(p) = {b, c}, V(q) = {c}.</p>
     <pre>a ──► b ──► c ⟲</pre>
+
+    <h2>8. Supplement from the reference book</h2>
+    
+    <h3>8.1 Same definitions as the lecture</h3>
+    <blockquote><p><strong>Room-and-light picture:</strong> the textbook says the same thing with slightly different notation, so you can read either one.</p></blockquote>
+    <blockquote><p><strong>Normal explanation:</strong> □ and ◇ are <strong>interdefinable</strong>: ◇ := ¬□¬ and □ := ¬◇¬ (these agree because ¬¬φ ≡ φ). So it makes no difference which one a textbook picks as primitive. Every result transfers between the two presentations. The book's Definitions 1.19 to 1.21 give the same frame, model, satisfaction clauses (◇ is "some successor", □ is "all successors"), and "true in a model / valid on a frame". Its <strong>degree</strong> is defined as deg(p)=0, deg(⊥)=0, deg(¬φ)=deg(φ), deg(φ∨ψ)=max, deg(◇φ)=1+deg(φ), which matches the lecture's md. It also defines the iterated modality ◇ⁿ ("true somewhere n steps from here"), matching ◇ⁿ and xRⁿy above.</p></blockquote>
+
+    <h3>8.2 Isomorphism and why it is harmless</h3>
+    <blockquote><p><strong>Room-and-light picture:</strong> two buildings are <em>isomorphic</em> if they are the <strong>same building with the rooms renamed</strong>: same doors, same lights, only the labels differ. Obviously, renaming a room can't change what is true there. That is the whole result. It lets us say "these two models are the same" without worrying about names.</p></blockquote>
+    <blockquote><p><strong>Normal explanation:</strong> An isomorphism is a <strong>structure-preserving renaming</strong>: a one-to-one correspondence between the points of two models that respects both the facts and the relation. The theorem says such models are indistinguishable by modal formulas, and it is proved by induction on the formula. Its value is conceptual: a logic should never tell apart two structures that differ only in how their points are <em>named</em>, so from now on we freely treat isomorphic models as the same model. An <strong>isomorphism</strong> f : 𝔐 → 𝔐′ is a <strong>bijection</strong> W → W′ such that</p>
+        <ol>
+            <li>x and f(x) satisfy the <strong>same variables</strong>, and</li>
+            <li><strong>xRy iff f(x)R′f(y)</strong> (arrows are preserved <em>and</em> reflected).</li>
+        </ol>
+    </blockquote>
+    <p><strong>Result:</strong> if 𝔐 ≅ 𝔐′ then x and f(x) satisfy exactly the same modal formulas.</p>
+
+    <h3>8.3 Disjoint unions</h3>
+    <blockquote><p><strong>Room-and-light picture:</strong> put two separate buildings side by side with <strong>no doors between them</strong>. If you stand in a room of building 1, you can still only walk through building 1's doors, so you see exactly what you saw before. The neighbouring building is invisible. So what is true at a room doesn't change when other buildings are placed next to it.</p></blockquote>
+    <blockquote><p><strong>Normal explanation:</strong> A disjoint union combines several models into one <strong>without connecting them</strong>. Modal formulas only ever follow R-links, so what is true at x depends only on the part of the model reachable from x. Combining x's model with unrelated material cannot change that reachable part, hence cannot change truth at x. The same idea leads to <em>generated submodels</em>: you can throw away everything not reachable from x without changing truth at x. The <strong>disjoint union</strong> of models 𝔐ᵢ (with disjoint world sets) takes the union of the worlds, the union of the relations, and V(p) = union of the Vᵢ(p). No arrows are added between components.</p></blockquote>
+
+    <h3>8.4 Finitely many formulas of each degree</h3>
+    <blockquote><p><strong>Room-and-light picture:</strong> if you only have a few lights (statements) and you are only allowed to look a few doors deep, then there are only so many genuinely different things you can say. Many formulas that look different just say the same thing. So limiting the depth limits how much you can express.</p></blockquote>
+    <blockquote><p><strong>Normal explanation:</strong> This is a <strong>counting argument</strong>. With finitely many basic statements, there are only finitely many truth-table-style building blocks at degree 0. Each extra layer of modality adds only finitely many new building blocks (one ◇ψ for each of the finitely many ψ available from the previous layer). So at every fixed degree you have finitely many genuinely different formulas, and the rest are just rewordings. If there are only <strong>finitely many variables</strong>, then for every n there are only <strong>finitely many formulas of degree ≤ n up to logical equivalence</strong> (book's Prop. 2.29). <em>Why:</em> degree 0 gives Boolean combinations of finitely many letters, so finitely many up to equivalence. A degree n+1 formula is a Boolean combination of letters and formulas ◇ψ with deg ψ ≤ n, and there are finitely many such ψ up to equivalence. <em>Meaning:</em> this is why md is a useful size measure: bounded depth means bounded expressive power.</p></blockquote>
+
+    <h3>8.5 Local vs global</h3>
+    <blockquote><p><strong>Room-and-light picture:</strong> □ and ◇ only see the <strong>neighbouring rooms through doors</strong>. They cannot say "somewhere in the whole building". That would need a separate tool, the <em>global modality</em>. And since a modal formula can't see the building next door (8.3), it cannot talk about "everywhere" at all.</p></blockquote>
+    <blockquote><p><strong>Normal explanation:</strong> Modal truth is <strong>local</strong>: it depends only on a bounded neighbourhood of the current point (within md steps). So some natural statements, such as "p holds somewhere in the whole model", cannot be written in the basic language. To say such things you must <em>add</em> a new operator, the global modality (E for "somewhere", A for "everywhere"). The proof that E is not definable uses the disjoint-union result: adding a far-away component can change E but cannot change anything a basic modal formula says. □ and ◇ are <strong>local</strong> (one step from the current world). The <strong>global modality</strong> E ("true at some world of the model") and its dual A ("true at all worlds") are <strong>not</strong> definable in the basic language. The disjoint-union result shows why: adding a new component can change Eφ at x but can never change basic modal truth at x.</p></blockquote>
 
     <h2>One-page summary</h2>
     <ul>
@@ -239,6 +474,40 @@
         <li><strong>Transitive ⇒ xRⁿy → xRy. Transitive + reflexive ⇒ equivalence in both directions. Intransitive ⇒ irreflexive.</strong></li>
     </ul>
 
-    <a href="index.html" class="nav-link">&larr; Back to Contents</a>
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
 </body>
 </html>

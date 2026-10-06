@@ -17,6 +17,14 @@
 
 ---
 
+**How to read each section.** Every topic is explained in three layers:
+
+1. **Math:** the precise definition or result (what you write in exams).
+2. **Room-and-light picture:** the building-with-doors story (for intuition).
+3. **Normal explanation:** the same idea in ordinary words, with no room picture (for real understanding and for CS meaning).
+
+---
+
 ## The big picture (read this first)
 
 Think of a **building with rooms and one-way doors**.
@@ -46,7 +54,9 @@ Everything in this lecture is a precise version of that picture. Whenever a sect
 
 ## 1. Motivation: necessary vs. possible
 
-> **In plain words:** ordinary logic only answers "true or false?". Modal logic lets you say **"must be true"** or **"might be true"**. "7 is prime" is true no matter where or when you ask, so it is *necessary*. "It is raining" is true in some places and times and false in others, so it is only *possible*. Modal logic gives a clean way to talk about all those different places and times at once.
+> **Room-and-light picture:** ordinary logic only answers "true or false?". Modal logic lets you say **"must be true"** or **"might be true"**. "7 is prime" is true no matter where or when you ask, so it is *necessary*. "It is raining" is true in some places and times and false in others, so it is only *possible*. Modal logic gives a clean way to talk about all those different places and times at once.
+
+> **Normal explanation:** Classical logic treats every statement as simply true or false. But in real reasoning some statements could not have been otherwise (mathematical facts, laws), while others are *contingent*: they depend on the circumstances, such as time, place, or the current state of a program. Modal logic evaluates a statement **relative to a circumstance** and adds two new words: **necessarily** (true in *every* circumstance we consider) and **possibly** (true in *at least one*). In computer science the circumstances are usually program states, so □ reads "in every next state" and ◇ reads "in some next state". The same machinery also models time ("always / sometimes"), knowledge ("the agent knows"), and permission ("it is obligatory / allowed").
 
 Propositional logic only says whether a statement is true or false. **Modal logic** adds the ability to talk about *how* it is true: **necessarily** or **possibly**.
 
@@ -68,7 +78,9 @@ The lecture's key remark: **truth values change from place to place and from tim
 
 ## 2. The modal language
 
-> **In plain words:** you take ordinary logic (and, or, not, if-then) and add **one new symbol, □**, which you can put in front of any formula to say "this is necessarily so". That's it. ◇ ("possibly") is not a new idea: "possibly p" just means "it is *not* necessary that p fails", which is ¬□¬p. The precedence rule means □ grabs only the thing right next to it, like a minus sign. So □p → □q ∨ □r reads: "*if* p is necessary, *then* either q is necessary or r is necessary."
+> **Room-and-light picture:** you take ordinary logic (and, or, not, if-then) and add **one new symbol, □**, which you can put in front of any formula to say "this is necessarily so". That's it. ◇ ("possibly") is not a new idea: "possibly p" just means "it is *not* necessary that p fails", which is ¬□¬p. The precedence rule means □ grabs only the thing right next to it, like a minus sign. So □p → □q ∨ □r reads: "*if* p is necessary, *then* either q is necessary or r is necessary."
+
+> **Normal explanation:** This section is **syntax** only: how formulas are written, with no meaning yet. Modal logic is propositional logic plus one operator that takes a formula and produces a new formula. Because it only *adds* to propositional logic, every ordinary propositional formula is also a modal formula. **Form_ML** is the collection of all well-formed formulas, and **Var_ML** is the collection of basic statement symbols. The precedence rule exists only to save brackets. ◇ is *defined* from □ because "ψ is possible" says exactly "it is not the case that ψ is necessarily false". Keeping only one primitive operator is also useful for proofs: when you prove something by induction on formulas, you handle one modal case instead of two.
 
 Let **L** be the language of propositional logic. The **propositional modal language ML** is L enriched with:
 
@@ -100,7 +112,9 @@ Reading: "φ is possible" means "it is *not* necessary that φ fails." So ◇ is
 
 ## 3. Kripke frames
 
-> **In plain words:** a frame is just the **floor plan**: a non-empty set of rooms and some one-way doors. "Arbitrary" means the architect can draw any doors at all, including none, doors back to the same room, or doors in both directions. "y is accessible from x" simply means "there is a door from x to y". **x↑** is the list of rooms you can walk into from x. **y↓** is the list of rooms that have a door into y. The frame says nothing about what is true in the rooms.
+> **Room-and-light picture:** a frame is just the **floor plan**: a non-empty set of rooms and some one-way doors. "Arbitrary" means the architect can draw any doors at all, including none, doors back to the same room, or doors in both directions. "y is accessible from x" simply means "there is a door from x to y". **x↑** is the list of rooms you can walk into from x. **y↓** is the list of rooms that have a door into y. The frame says nothing about what is true in the rooms.
+
+> **Normal explanation:** A frame is the **structure** you reason over: a set of situations and a relation saying which situations are *relevant from* which. The relation R is where the **meaning of "possible"** lives, and different applications choose R differently. For time, xRy can mean "y is a later moment than x". For knowledge, it can mean "in x, the agent cannot rule out y". For programs, it means "y can follow x in one execution step". This is why modal logic is really a *family* of logics: change the properties of R and you change which statements about necessity are always true. A frame contains **no facts**, only the shape. The words successor and predecessor just mean "reachable from" and "leads to".
 
 A **(modal Kripke) frame** is a pair **𝔉 = ⟨W, R⟩** where:
 
@@ -119,7 +133,9 @@ A frame is only a **graph**: dots (worlds) and arrows (R). It says nothing yet a
 
 ## 4. Valuations and models
 
-> **In plain words:** now we switch the lights on. For each statement p, the valuation gives the list of rooms where p is true. The floor plan together with these lights is a **model**. The one rule difference from intuitionistic logic: there, once something became true it had to stay true in every room you could reach. Here there is **no such rule**. A room can have the rain light on while the next room has it off, which is exactly what we need for "raining now, not raining later".
+> **Room-and-light picture:** now we switch the lights on. For each statement p, the valuation gives the list of rooms where p is true. The floor plan together with these lights is a **model**. The one rule difference from intuitionistic logic: there, once something became true it had to stay true in every room you could reach. Here there is **no such rule**. A room can have the rain light on while the next room has it off, which is exactly what we need for "raining now, not raining later".
+
+> **Normal explanation:** A frame has structure but no facts, so we add facts separately. A valuation assigns each basic statement p the **set of situations in which p holds**. Equivalent view: it gives every situation a list of which basic statements are true there. Structure plus facts is a model. Keeping the two apart matters, because the same structure can carry many different sets of facts, and later we will ask questions like "is this formula true no matter which facts we choose?" (that is *frame validity*). In modal logic V(p) can be **any** subset of W. There is no persistence rule, so a fact may hold now and fail next.
 
 Fix a modal language ML.
 
@@ -135,7 +151,7 @@ Fix a modal language ML.
 
 ## 5. The truth relation
 
-> **In plain words:** to check a formula, **stand in a room** and apply these rules.
+> **Room-and-light picture:** to check a formula, **stand in a room** and apply these rules.
 > 
 > 1. For a plain statement like p: look at the light in *this* room.
 > 2. For and, or, not, if-then: use ordinary logic, looking **only at this room**.
@@ -145,6 +161,8 @@ Fix a modal language ML.
 > Nested formulas just repeat the walk. For □◇p: go through every door, and in each landing room check that *some* further door leads to a lit room.
 > 
 > **Dead-end room (no doors):** □ is automatically true, because "every door leads to a lit room" has no counterexample. ◇ is automatically false, because there is no door to find. Think of "every student in an empty classroom passed": technically true, since nobody failed.
+
+> **Normal explanation:** Truth is no longer "p is true" but "**p is true at x in model 𝔐**", a statement about a *pair*. The definition goes by recursion on the formula, so every formula gets a definite truth value at every situation. The classical connectives are evaluated **at the current situation only**, exactly as in school logic. Only □ and ◇ look elsewhere, and they act like **quantifiers restricted to accessible situations**: □ψ says "for all y with xRy, ψ holds at y", and ◇ψ says "there exists y with xRy such that ψ holds at y". (A helpful way to see modal logic: it is a small fragment of first-order logic where you may only quantify over R-neighbours.) The dead-end rule is the same as in ordinary mathematics: a universal claim over an **empty** set is true, and an existence claim over an empty set is false. The shorthand x ⊨ ψ drops the model name, and the truth set V̄(ψ) = {x : x ⊨ ψ} collects all situations where ψ holds.
 
 Let x be a point of 𝔉. We define **(𝔐, x) ⊨ ψ**, read "**ψ is true at world x in model 𝔐**", by induction on ψ:
 
@@ -193,7 +211,9 @@ For reference, the standard modal versions of the definitions:
 
 ## 6. Modal degree
 
-> **In plain words:** modal degree counts **how many doors deep** a formula looks. Plain statements look at no doors (degree 0). Each □ or ◇ stacked on top lets the formula look one door further. For □◇p: go through one door (□), then through another (◇), so it looks 2 doors deep. When two parts are joined by and/or/if-then, the formula is only as deep as its deepest part. A formula of degree 2 can never be affected by anything more than 2 doors away.
+> **Room-and-light picture:** modal degree counts **how many doors deep** a formula looks. Plain statements look at no doors (degree 0). Each □ or ◇ stacked on top lets the formula look one door further. For □◇p: go through one door (□), then through another (◇), so it looks 2 doors deep. When two parts are joined by and/or/if-then, the formula is only as deep as its deepest part. A formula of degree 2 can never be affected by anything more than 2 doors away.
+
+> **Normal explanation:** Modal degree is a **complexity measure** for formulas, like the maximum nesting depth of loops in a program. It is defined by recursion: atoms have 0, joining formulas with ∧, ∨, → takes the maximum, and each □ or ◇ adds one. It matters for two reasons. First, it is a convenient number to do induction on. Second, it measures how far a formula can "see": whether a formula of degree n is true at x depends only on situations reachable within n steps of x. □ⁿ and ◇ⁿ are just names for applying the operator n times in a row.
 
 The **modal degree md(ψ)** is the **maximum nesting depth of modal operators** in ψ. Defined by induction:
 
@@ -224,7 +244,7 @@ The **modal degree md(ψ)** is the **maximum nesting depth of modal operators** 
 
 ## 7. n-step accessibility
 
-> **In plain words:** xRⁿy means "you can get from x to y by walking exactly n doors" (rooms may repeat, so you can pass through the same room twice). Walking 0 doors means you haven't moved, so xR⁰y just means x is y. Then the shape words:
+> **Room-and-light picture:** xRⁿy means "you can get from x to y by walking exactly n doors" (rooms may repeat, so you can pass through the same room twice). Walking 0 doors means you haven't moved, so xR⁰y just means x is y. Then the shape words:
 > 
 > - **Transitive:** whenever you can go x → y → z, there is also a **shortcut door** straight from x to z.
 > - **Reflexive:** every room has a door that leads back to itself.
@@ -239,6 +259,8 @@ The **modal degree md(ψ)** is the **maximum nesting depth of modal operators** 
 > 4. *Intransitive frames have no self-doors:* suppose room x has a door to itself. Then x → x → x is a two-step walk, and the intransitive rule would then forbid the door x → x. But it exists. Contradiction.
 > 
 > **Careful:** *irreflexive* means **no** room loops back. *Not reflexive* only means **some** room fails to.
+
+> **Normal explanation:** xRⁿy is simply the relation R **composed with itself n times**, and R⁰ is the identity relation (every point related only to itself). This lines up exactly with repeated modalities: □ⁿψ is true at x iff ψ holds at every y with xRⁿy. The properties (transitive, reflexive, irreflexive, intransitive) are just ways of classifying the *shape* of R, and each shape later matches a logical principle. For example, transitivity matches the axiom □p → □□p, and reflexivity matches □p → p (from your revision table). The facts proved here use only elementary reasoning. **Transitive** means composing R with itself never gives anything new, so Rⁿ ⊆ R. **Reflexive** means you can insert identity steps to lengthen a path, so R ⊆ Rⁿ. Intransitive ⇒ irreflexive is a proof by contradiction. Finally, "irreflexive" is ∀x ¬(xRx) while "not reflexive" is ¬∀x (xRx), which is ∃x ¬(xRx); the position of the negation is the whole difference.
 
 Let 𝔉 = ⟨W, R⟩ be a frame and x, y ∈ W.
 
@@ -273,13 +295,22 @@ Let 𝔉 = ⟨W, R⟩ be a frame and x, y ∈ W.
 
 ## Full worked example
 
-> **Walk-through in words:** three rooms **a, b, c**. Room a has one door to b. Room b has one door to c. Room c has one door **back to itself**. The *p* light is on in b and c. The *q* light is on only in c.
+> **Room-and-light walk-through:** three rooms **a, b, c**. Room a has one door to b. Room b has one door to c. Room c has one door **back to itself**. The *p* light is on in b and c. The *q* light is on only in c.
 > 
 > - From a, the only door goes to b, and b has p lit. So **□p is true** (all doors lead to lit rooms) and **◇p is true** (some door does).
 > - But b has no q light. So **□q is false** at a, and **◇q is false** too, since the only door leads to a dark-for-q room.
 > - Two doors from a you reach c (a→b→c), and c has q. So **□□q is true** at a.
 > - Room c loops to itself and has q, so q stays true however many steps you take from c.
 > - Not transitive: you can go a→b→c but there is no shortcut door a→c.
+
+> **Normal explanation:** The model in set notation: W = {a,b,c}, R = {(a,b),(b,c),(c,c)}, V(p) = {b,c}, V(q) = {c}. The standard method is to compute **truth sets bottom-up**, which is exactly what the recursive definition of truth does. A world x belongs to V̄(◇ψ) iff x has some R-successor in V̄(ψ), and to V̄(□ψ) iff **all** R-successors of x lie in V̄(ψ).
+> 
+> - V̄(p) = {b,c} and V̄(q) = {c}
+> - V̄(◇p) = {a,b,c} (every world has a successor in {b,c}) and V̄(□p) = {a,b,c} (every successor already lies in {b,c})
+> - V̄(◇q) = {b,c} (a's only successor b is outside {c}) and V̄(□q) = {b,c}
+> - V̄(□□q) = {a,b,c}, since all successors of every world lie in V̄(□q) = {b,c}
+> 
+> So a ⊨ □□q but a ⊭ □q, which matches the table below.
 
 **Model:** W = {a, b, c}, R = {(a,b), (b,c), (c,c)}, V(p) = {b, c}, V(q) = {c}.
 
@@ -326,11 +357,15 @@ Note a ⊨ □p and a ⊨ ¬□q while a ⊨ ◇p and a ⊭ ◇q: all computed b
 
 ### 8.1 Same definitions as the lecture
 
-> **In plain words:** the textbook says the same thing with slightly different notation, so you can read either one. The book's Definitions 1.19 to 1.21 give the same frame, model, satisfaction clauses (◇ is "some successor", □ is "all successors"), and "true in a model / valid on a frame". Its **degree** is defined as deg(p)=0, deg(⊥)=0, deg(¬φ)=deg(φ), deg(φ∨ψ)=max, deg(◇φ)=1+deg(φ), which matches the lecture's md. It also defines the iterated modality ◇ⁿ ("true somewhere n steps from here"), matching ◇ⁿ and xRⁿy above.
+> **Room-and-light picture:** the textbook says the same thing with slightly different notation, so you can read either one.
+
+> **Normal explanation:** □ and ◇ are **interdefinable**: ◇ := ¬□¬ and □ := ¬◇¬ (these agree because ¬¬φ ≡ φ). So it makes no difference which one a textbook picks as primitive. Every result transfers between the two presentations. The book's Definitions 1.19 to 1.21 give the same frame, model, satisfaction clauses (◇ is "some successor", □ is "all successors"), and "true in a model / valid on a frame". Its **degree** is defined as deg(p)=0, deg(⊥)=0, deg(¬φ)=deg(φ), deg(φ∨ψ)=max, deg(◇φ)=1+deg(φ), which matches the lecture's md. It also defines the iterated modality ◇ⁿ ("true somewhere n steps from here"), matching ◇ⁿ and xRⁿy above.
 
 ### 8.2 Isomorphism and why it is harmless
 
-> **In plain words:** two buildings are *isomorphic* if they are the **same building with the rooms renamed**: same doors, same lights, only the labels differ. Obviously, renaming a room can't change what is true there. That is the whole result. It lets us say "these two models are the same" without worrying about names. An **isomorphism** f : 𝔐 → 𝔐′ is a **bijection** W → W′ such that
+> **Room-and-light picture:** two buildings are *isomorphic* if they are the **same building with the rooms renamed**: same doors, same lights, only the labels differ. Obviously, renaming a room can't change what is true there. That is the whole result. It lets us say "these two models are the same" without worrying about names.
+
+> **Normal explanation:** An isomorphism is a **structure-preserving renaming**: a one-to-one correspondence between the points of two models that respects both the facts and the relation. The theorem says such models are indistinguishable by modal formulas, and it is proved by induction on the formula. Its value is conceptual: a logic should never tell apart two structures that differ only in how their points are *named*, so from now on we freely treat isomorphic models as the same model. An **isomorphism** f : 𝔐 → 𝔐′ is a **bijection** W → W′ such that
 
 1. x and f(x) satisfy the **same variables**, and
 2. **xRy iff f(x)R′f(y)** (arrows are preserved *and* reflected).
@@ -339,17 +374,23 @@ Note a ⊨ □p and a ⊨ ¬□q while a ⊨ ◇p and a ⊭ ◇q: all computed b
 
 ### 8.3 Disjoint unions
 
-> **In plain words:** put two separate buildings side by side with **no doors between them**. If you stand in a room of building 1, you can still only walk through building 1's doors, so you see exactly what you saw before. The neighbouring building is invisible. So what is true at a room doesn't change when other buildings are placed next to it. The **disjoint union** of models 𝔐ᵢ (with disjoint world sets) takes the union of the worlds, the union of the relations, and V(p) = union of the Vᵢ(p). No arrows are added between components.
+> **Room-and-light picture:** put two separate buildings side by side with **no doors between them**. If you stand in a room of building 1, you can still only walk through building 1's doors, so you see exactly what you saw before. The neighbouring building is invisible. So what is true at a room doesn't change when other buildings are placed next to it.
+
+> **Normal explanation:** A disjoint union combines several models into one **without connecting them**. Modal formulas only ever follow R-links, so what is true at x depends only on the part of the model reachable from x. Combining x's model with unrelated material cannot change that reachable part, hence cannot change truth at x. The same idea leads to *generated submodels*: you can throw away everything not reachable from x without changing truth at x. The **disjoint union** of models 𝔐ᵢ (with disjoint world sets) takes the union of the worlds, the union of the relations, and V(p) = union of the Vᵢ(p). No arrows are added between components.
 
 **Result (book's Prop. 2.3):** for every world x of 𝔐ᵢ and every formula φ, **𝔐ᵢ, x ⊨ φ iff (⊎ⱼ𝔐ⱼ), x ⊨ φ.** *Why:* ◇ and □ only look at one-step successors, and every successor of x lies in x's own component. Gluing other models alongside cannot change what x sees.
 
 ### 8.4 Finitely many formulas of each degree
 
-> **In plain words:** if you only have a few lights (statements) and you are only allowed to look a few doors deep, then there are only so many genuinely different things you can say. Many formulas that look different just say the same thing. So limiting the depth limits how much you can express. If there are only **finitely many variables**, then for every n there are only **finitely many formulas of degree ≤ n up to logical equivalence** (book's Prop. 2.29). *Why:* degree 0 gives Boolean combinations of finitely many letters, so finitely many up to equivalence. A degree n+1 formula is a Boolean combination of letters and formulas ◇ψ with deg ψ ≤ n, and there are finitely many such ψ up to equivalence. *Meaning:* this is why md is a useful size measure: bounded depth means bounded expressive power.
+> **Room-and-light picture:** if you only have a few lights (statements) and you are only allowed to look a few doors deep, then there are only so many genuinely different things you can say. Many formulas that look different just say the same thing. So limiting the depth limits how much you can express.
+
+> **Normal explanation:** This is a **counting argument**. With finitely many basic statements, there are only finitely many truth-table-style building blocks at degree 0. Each extra layer of modality adds only finitely many new building blocks (one ◇ψ for each of the finitely many ψ available from the previous layer). So at every fixed degree you have finitely many genuinely different formulas, and the rest are just rewordings. If there are only **finitely many variables**, then for every n there are only **finitely many formulas of degree ≤ n up to logical equivalence** (book's Prop. 2.29). *Why:* degree 0 gives Boolean combinations of finitely many letters, so finitely many up to equivalence. A degree n+1 formula is a Boolean combination of letters and formulas ◇ψ with deg ψ ≤ n, and there are finitely many such ψ up to equivalence. *Meaning:* this is why md is a useful size measure: bounded depth means bounded expressive power.
 
 ### 8.5 Local vs global
 
-> **In plain words:** □ and ◇ only see the **neighbouring rooms through doors**. They cannot say "somewhere in the whole building". That would need a separate tool, the *global modality*. And since a modal formula can't see the building next door (8.3), it cannot talk about "everywhere" at all. □ and ◇ are **local** (one step from the current world). The **global modality** E ("true at some world of the model") and its dual A ("true at all worlds") are **not** definable in the basic language. The disjoint-union result shows why: adding a new component can change Eφ at x but can never change basic modal truth at x.
+> **Room-and-light picture:** □ and ◇ only see the **neighbouring rooms through doors**. They cannot say "somewhere in the whole building". That would need a separate tool, the *global modality*. And since a modal formula can't see the building next door (8.3), it cannot talk about "everywhere" at all.
+
+> **Normal explanation:** Modal truth is **local**: it depends only on a bounded neighbourhood of the current point (within md steps). So some natural statements, such as "p holds somewhere in the whole model", cannot be written in the basic language. To say such things you must *add* a new operator, the global modality (E for "somewhere", A for "everywhere"). The proof that E is not definable uses the disjoint-union result: adding a far-away component can change E but cannot change anything a basic modal formula says. □ and ◇ are **local** (one step from the current world). The **global modality** E ("true at some world of the model") and its dual A ("true at all worlds") are **not** definable in the basic language. The disjoint-union result shows why: adding a new component can change Eφ at x but can never change basic modal truth at x.
 
 ---
 
