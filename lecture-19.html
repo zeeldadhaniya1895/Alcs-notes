@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lecture 19: Generation, Reduction, Unraveling into Trees, Bulldozer">
+    <title>Lecture 19: Generation - ALCS Handbook</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
+
+    <h1>Lecture 19: Generation, Reduction, Unraveling into Trees, Bulldozer</h1>
+    
+    <p><strong>What this lecture covers:</strong> (1) the <strong>generation theorem</strong> (cutting a frame down to what is reachable preserves truth), (2) <strong>reductions</strong> with examples, (3) the <strong>reduction theorem</strong>, (4) every formula valid on a frame is valid on ∘ or on •, (5) <strong>tree frames</strong>, (6) every rooted frame is a reduction image of an <strong>intransitive tree</strong> (unraveling), (7) the <strong>bulldozer theorem</strong> (transitive frames come from strict partial orders).</p>
+    
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every topic has three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise statement or proof (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building-with-doors story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words, without the room picture.</li>
+    </ol>
+    
+    <p><strong>Quick recap from earlier lectures:</strong></p>
+    <ul>
+        <li>x⇑ = {x} ∪ (points reachable in one or more steps). A <strong>generated subframe</strong> is the subframe induced by such an upward closed set. A point x is a <strong>root</strong> if x⇑ = W.</li>
+        <li>R* = reflexive and transitive closure of R, so <strong>xR*y iff y ∈ x⇑</strong>.</li>
+        <li><strong>Dead end</strong> = a point with no successor. ∘ = a single reflexive point, • = a single irreflexive point.</li>
+        <li>(𝔉,x) ⊨ φ for a <strong>frame</strong> means φ is true at x under <strong>every</strong> valuation (validity at a point). 𝔉 ⊨ φ means valid at every point.</li>
+        <li><strong>K</strong> = formulas valid on all frames.</li>
+    </ul>
+    
+    <p><strong>Notation notes (read from handwriting).</strong></p>
+    <ul>
+        <li>The board writes "𝔊 is a <strong>reduct</strong> of 𝔉" and "𝔉 is <strong>reduced</strong> to 𝔊". I read both as: there is a reduction of 𝔉 onto 𝔊.</li>
+        <li>Page 8 of the PDF is a copy of page 7.</li>
+        <li>Where the board does not give a definition or proof, I say so and label what I add.</li>
+    </ul>
+
+    <hr>
+
+    <h2>1. The generation theorem</h2>
+
+    <h3>Math</h3>
+    <p><strong>Theorem (Generation).</strong> If 𝔑 is a <strong>generated submodel</strong> of 𝔐, then for every point x in 𝔑 and every modal formula φ:</p>
+    <blockquote>
+        <p><strong>(𝔑,x) ⊨ φ  iff  (𝔐,x) ⊨ φ.</strong></p>
+    </blockquote>
+
+    <p><strong>Proof idea (not on the board).</strong> Induction on φ. Variables and Boolean connectives look only at x, and x has the same facts in both models. For □ψ: since 𝔑 is generated, it is <strong>closed under successors</strong>, so every successor of x in 𝔐 is already in 𝔑 (with the same arrows). By induction ψ has the same truth value at each such successor in both models, so □ψ (and ◇ψ) has the same value at x. ∎</p>
+
+    <p><strong>Corollary.</strong> If 𝔊 is a generated subframe of 𝔉 (the board writes ⊆ with a small arrow), then for every x in 𝔊 and every formula φ:</p>
+    <ol>
+        <li><strong>(𝔊,x) ⊨ φ iff (𝔉,x) ⊨ φ</strong></li>
+        <li><strong>𝔉 ⊨ φ implies 𝔊 ⊨ φ</strong></li>
+    </ol>
+    <p><em>Why the corollary follows (my filling in):</em> a valuation on 𝔊 can be extended arbitrarily to 𝔉, and a valuation on 𝔉 can be restricted to 𝔊. The theorem says truth at points of 𝔊 is the same either way.</p>
+
+    <p><strong>Corollary.</strong> <strong>K = { φ ∈ Form_ML : 𝔉 ⊨ φ for all rooted frames 𝔉 }.</strong><br>
+    <em>Why:</em> "⊆" is trivial (rooted frames are frames). For "⊇": if φ fails at x in some frame, then by the generation theorem it fails at x in the subframe generated by x, which is a <strong>rooted</strong> frame. So φ is not valid on all rooted frames either.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> from room x you can only ever walk through doors into rooms reachable from x. So you can <strong>demolish every room you cannot reach from x</strong> and nothing changes for anyone standing in the surviving part. A person standing in room x cannot tell the difference between the whole building and the building cut down to what is reachable.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> □ and ◇ only look at successors, and the successors of a point inside an upward closed set stay inside it. So truth at x depends only on the part of the frame reachable from x. This is the global version of Lecture 17's locality result (where the bound was n steps). The last corollary is useful: to decide whether a formula is in K, you may restrict attention to <strong>rooted</strong> frames, i.e. frames where one point reaches everything.</p>
+    </blockquote>
+
+    <h2>2. Reductions and examples</h2>
+
+    <h3>Math</h3>
+    <p><strong>Definition (standard; the board does not restate it on these pages).</strong> A map f from 𝔉 = ⟨W,R⟩ <strong>onto</strong> 𝔊 = ⟨V,S⟩ is a <strong>reduction</strong> of 𝔉 to 𝔊 if for all x, y ∈ W:</p>
+    <ul>
+        <li><strong>(R1, forth)</strong> xRy ⇒ f(x) S f(y)</li>
+        <li><strong>(R2, back)</strong> f(x) S z ⇒ there is y ∈ W with <strong>xRy and f(y) = z</strong></li>
+    </ul>
+
+    <p>For models 𝔐 = ⟨𝔉,U⟩ and 𝔑 = ⟨𝔊,V⟩ there is a third condition:</p>
+    <ul>
+        <li><strong>(R3)</strong> x ∈ U(p) iff f(x) ∈ V(p), for every variable p.</li>
+    </ul>
+    <p>(All examples on the board agree with this definition; I checked them below.)</p>
+
+    <p><strong>Example (page 2).</strong> Let (a) be the <strong>transitive irreflexive</strong> chain on {0,1,2,…} with n R m iff n &lt; m (drawn with arrows only between consecutive points). Let (b) be the <strong>proper 2-point cluster</strong> ②, and (c) the <strong>single reflexive point</strong> ∘.</p>
+    <ul>
+        <li>(a) is reduced to (b) by <strong>f(n) = n mod 2</strong>.</li>
+        <li>(a) is reduced to (c) by <strong>g(n) = 0 for all n</strong>.</li>
+    </ul>
+
+    <p><em>Check for f.</em> Forth: n &lt; m gives f(n) R f(m), because every pair in the cluster is related. Back: if f(n) R z with z ∈ {0,1}, pick any m &gt; n with m mod 2 = z. Such an m exists. ✓<br>
+    <em>Check for g.</em> Forth: every pair is mapped to the reflexive pair ✓. Back: ∘R∘, and n has a successor m &gt; n ✓.</p>
+
+    <p><strong>Remark on the transitive closure (board).</strong> If we <strong>do not take the transitive closure</strong>, i.e. we read (a) as having <strong>only the arrows n → n+1</strong>, then <strong>(a) is not reducible to (b), but is reducible to (c)</strong>.<br>
+    <em>Why:</em> for (b), the back condition fails. The point f(n) sees itself in ②, so we would need a successor m of n with the same parity, but the only successor is n+1, which has the other parity. For (c), the back condition only needs n to have some successor, and n+1 works.</p>
+
+    <p><strong>Fact (board).</strong> <strong>No reflexive point can be mapped by a reduction to an irreflexive one.</strong><br>
+    <em>Proof:</em> if xRx then forth gives f(x) S f(x), so f(x) is reflexive. (The converse direction is allowed: irreflexive points can be sent to reflexive ones, as in f(n) = n mod 2.)</p>
+    
+    <p><em>(The sketch of (c) on the board looks like two small circles; the map g forces the image to be a single point, so (c) is ∘.)</em></p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a reduction is a way of <strong>squashing a big building onto a smaller one</strong>: several rooms may be glued to the same room, but the squashing must respect doors in two ways. (forth) If there was a door between two rooms, there must be a door between the two rooms they were squashed onto. (back) If the squashed-onto room has a door to some room z, then <strong>every</strong> original room glued to it must have a door to <strong>some</strong> room that gets squashed onto z. In the "n mod 2" example, all even rooms are glued to room 0 and all odd rooms to room 1.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a reduction is a structure-preserving surjection of frames, and it is also called a <strong>p-morphism</strong> or <strong>bounded morphism</strong> in many textbooks. Two conditions: it must not create arrows that do not exist (forth), and it must not lose any possible move (back). The "back" condition is the one people forget. It is exactly what makes the next theorem true. Note that a reduction can merge points, so unlike an isomorphism it is not one-to-one.</p>
+    </blockquote>
+
+    <h2>3. The reduction theorem</h2>
+
+    <h3>Math</h3>
+    <p><strong>Theorem (Reduction).</strong> If f is a reduction of a model 𝔐 to a model 𝔑, then for every point x in 𝔐 and every formula φ:</p>
+    <blockquote>
+        <p><strong>(𝔐,x) ⊨ φ  iff  (𝔑,f(x)) ⊨ φ.</strong></p>
+    </blockquote>
+
+    <p><strong>Corollary.</strong> If f is a reduction of the frame 𝔉 to the frame 𝔊, then for every point x in 𝔉 and every formula φ:</p>
+    <ol>
+        <li><strong>(𝔉,x) ⊨ φ implies (𝔊,f(x)) ⊨ φ</strong></li>
+        <li><strong>𝔉 ⊨ φ implies 𝔊 ⊨ φ</strong></li>
+    </ol>
+
+    <p><strong>Proof idea (not on the board).</strong> Theorem: induction on φ. Variables: condition (R3). Boolean connectives: immediate. □ψ: suppose (𝔑,f(x)) ⊭ □ψ. Then some z with f(x) S z has ψ false at z in 𝔑. By the back condition there is y with xRy and f(y) = z, and by induction ψ is false at y in 𝔐, so □ψ fails at x. Conversely, if ψ is false at some successor y of x in 𝔐, then by forth f(y) is a successor of f(x), and by induction ψ is false there. (◇ is dual.) ∎<br>
+    Corollary (ii): given <strong>any</strong> valuation V on 𝔊, define U(p) = f⁻¹(V(p)) on 𝔉. Then f is a reduction of models, and since 𝔉 ⊨ φ, the formula is true at every point of (𝔉,U). As f is <strong>onto</strong>, every point of (𝔊,V) is the image of such a point, so φ is true everywhere in (𝔊,V).</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> if you squash the building onto a smaller one <strong>and carry the lights along</strong>, every room says the same thing about every formula as the room it was squashed onto. So the big building and its squashed copy have the same "truths". Since the squashed building has fewer rooms, it is easier to analyse.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a reduction preserves the <strong>truth of every modal formula</strong>, so frames that reduce onto 𝔊 can only validate things 𝔊 validates. <strong>Use it backwards to refute formulas:</strong> if φ is <strong>not</strong> valid on 𝔊, then φ is not valid on <strong>any</strong> frame that reduces onto 𝔊. For example, the McKinsey formula fails on the 2-point cluster ② (Lecture 18), and the chain (ℕ, &lt;) reduces onto ② via n mod 2, so McKinsey is not valid on (ℕ, &lt;) either. Likewise Löb's formula fails on ∘ (Lecture 17), and (ℕ, &lt;) reduces onto ∘, so Löb fails on the chain as well, which agrees with Lecture 17's direct check.</p>
+    </blockquote>
+
+    <h2>4. Every frame-valid formula is valid on ∘ or on •</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> If a modal formula φ is valid in some frame, then it is also valid either in <strong>∘</strong> or in <strong>•</strong>.</p>
+    <p><strong>Proof.</strong> Suppose 𝔉 ⊨ φ.</p>
+    <ul>
+        <li><strong>Case 1: 𝔉 contains a dead end x.</strong> Then ⟨{x}, ∅⟩ = • is a <strong>generated subframe</strong> of 𝔉 (x has no successors, so {x} is upward closed). By the generation corollary, • ⊨ φ.</li>
+        <li><strong>Case 2: otherwise every point of 𝔉 has a successor.</strong> Then the constant map <strong>f(x) = ∘</strong> for all x is a <strong>reduction</strong> of 𝔉 to ∘. Forth: any pair of points goes to the reflexive pair (∘,∘). Back: ∘ S ∘, and every x has some successor y with f(y) = ∘. By the reduction corollary, ∘ ⊨ φ. ∎</li>
+    </ul>
+
+    <p><em>(My note, not on the board: this is the key step in Makinson's theorem, which says that every consistent normal modal logic is contained in the logic of ∘ or the logic of •.)</em></p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> take any building. Either it has a <strong>dead-end room</strong>, in which case the one-room building with no door (cut out of it) keeps the truths. Or <strong>every room has a door out</strong>, in which case you can squash the whole building into one room with a door to itself. Either way, anything true in the big building survives in one of these two tiny buildings.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this shows how limited "valid on some frame" is as a source of logics. No matter how complicated the frame, its logic sits inside the logic of one of two one-point frames. The proof uses the two tools of this lecture, <strong>generation</strong> (cut away) and <strong>reduction</strong> (squash), in the two cases of a yes/no split: "does a dead end exist?".</p>
+    </blockquote>
+
+    <h2>5. Tree frames</h2>
+
+    <h3>Math</h3>
+    <p>A modal frame 𝔉 = ⟨W,R⟩ is called a <strong>tree</strong> if the <strong>reflexive and transitive closure R*</strong> of R (that is, for x, y ∈ W: <strong>xR*y iff y ∈ x⇑</strong>) is a <strong>tree partial order</strong> on W.</p>
+    <p>The criterion used on the next pages is: for every point x, the set of points below it, <strong>x⇓</strong> (the points that reach x, including x), is <strong>finite and linearly ordered by R*</strong>. <em>(The board does not spell out the full definition of "tree partial order" on this page; this is the working meaning from page 7.)</em></p>
+    <p>An <strong>intransitive tree</strong> is a tree whose own relation R is intransitive, so R is exactly the "immediate successor" relation: every non-root point has exactly one R-predecessor.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a tree is a building shaped like a <strong>family tree</strong> or a branching staircase: from the root room the corridors branch out, and no two branches ever merge again. Looking back from any room, there is exactly <strong>one path</strong> to the root.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a tree is a frame where the "above/below" order has no cycles and no merging. The closure R* turns the one-step relation into the "reachable" order, and the tree condition says that the past of each point is a finite chain. In an <strong>intransitive</strong> tree we draw only the immediate arrows, and R* supplies the rest.</p>
+    </blockquote>
+
+    <h2>6. Every rooted frame is a reduction image of an intransitive tree (unraveling)</h2>
+
+    <h3>Math</h3>
+    <p><strong>Theorem.</strong> Every <strong>rooted</strong> modal frame 𝔊 = ⟨V,S⟩ is a reduct of some <strong>intransitive tree</strong>.</p>
+    <p><strong>Proof (board).</strong> Let v₀ be a root of 𝔊. Define</p>
+    <blockquote>
+        <p><strong>W = { ⟨v₀, v₁, …, v_{n−1}, vₙ⟩ : v₀ S v₁ S … S v_{n−1} S vₙ }</strong>   (all finite S-paths starting at the root)</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>⟨v₀,…,vₙ⟩ R ⟨v₀′,…,v_m′⟩  iff  m = n+1 and vᵢ = vᵢ′ for i ≤ n</strong>   (R is "extend the path by one step")</p>
+    </blockquote>
+    
+    <p>Clearly 𝔉 = ⟨W,R⟩ is an <strong>intransitive</strong> frame with root ⟨v₀⟩.<br>
+    <strong>𝔉 is a tree</strong>, since the set of points below ⟨v₀,…,vₙ⟩ is <strong>finite</strong> and <strong>linearly ordered</strong> by the reflexive transitive closure of R, namely</p>
+    <blockquote>
+        <p>⟨v₀⟩ R ⟨v₀,v₁⟩ R … R ⟨v₀,…,v_{n−1}⟩ R ⟨v₀,…,v_{n−1},vₙ⟩.</p>
+    </blockquote>
+    
+    <p>The map <strong>f : W → V onto V</strong>, defined by <strong>f(⟨v₀,…,vₙ⟩) = vₙ</strong> (the last point of the path), is a <strong>reduction of 𝔉 to 𝔊</strong>.</p>
+    
+    <p><em>Why f is a reduction (my check):</em> <strong>Onto:</strong> because v₀ is a root, every v ∈ V is reached from v₀ by some finite path, so v = f(path). <strong>Forth:</strong> ⟨v₀..vₙ⟩ R ⟨v₀..vₙ,v_{n+1}⟩ means vₙ S v_{n+1}. <strong>Back:</strong> if vₙ S z then the extended path ⟨v₀..vₙ,z⟩ is in W, is an R-successor, and maps to z. ∎</p>
+
+    <p><strong>Corollary.</strong> <strong>K = { φ ∈ Form_ML : 𝔉 ⊨ φ for all intransitive trees 𝔉 }.</strong><br>
+    <em>Why:</em> "⊆" is trivial. For "⊇": if φ fails on some frame, it fails on a rooted generated subframe 𝔊 (generation). By the theorem 𝔊 is a reduction image of an intransitive tree 𝔉, and by the reduction corollary (𝔉 ⊨ φ ⇒ 𝔊 ⊨ φ) the formula φ fails on 𝔉.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> pretend you are wandering the building from the root room and <strong>write down your whole walk</strong> as a list of rooms. Make a new building whose rooms are these <strong>walks</strong> (not the original rooms): a walk has doors only to its one-step extensions. This new building is a <strong>tree</strong>: from every walk there is only one way back to the start. Mapping each walk to the room where it currently ends squashes the tree back onto the original building.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this is <strong>unraveling</strong> (also called unfolding). It replaces cycles and merging by an infinite tree that has exactly the same local behaviour. It explains why trees are enough for K: any "bad" frame can be unravelled into a tree without changing which formulas hold. Practical consequence: a satisfiable modal formula has a <strong>tree-shaped</strong> model (the tree model property from your revision notes).</p>
+    </blockquote>
+
+    <h2>7. Strict partial orders and the bulldozer theorem</h2>
+
+    <h3>Math</h3>
+    <p>An <strong>irreflexive and transitive</strong> binary relation is called a <strong>strict partial order</strong>.</p>
+
+    <p><strong>Theorem (Bulldozer).</strong></p>
+    <ol>
+        <li><strong>Every transitive frame is a reduct of some strict partial order frame.</strong></li>
+        <li><strong>Every quasi-order frame is a reduct of some partial order frame.</strong></li>
+    </ol>
+
+    <p><strong>Proof of (1) (board, completed by me where marked).</strong> Let 𝔊 = ⟨V,S⟩ be a transitive frame. To each point x ∈ V associate a set <strong>x⁺</strong>:</p>
+    <ul>
+        <li><strong>{⟨x,i⟩ : i = 0,1,2,…}</strong> (infinitely many copies) if the cluster C(x) is <strong>non-degenerate</strong></li>
+        <li><strong>{⟨x,0⟩}</strong> (one copy) if C(x) is <strong>degenerate</strong></li>
+    </ul>
+
+    <p>Let <strong>W = ⋃ x⁺</strong>. Fix a <strong>well-ordering</strong> x₀, x₁, …, x_ξ, … of the points of <strong>every cluster</strong> C in 𝔊. Define R on W by:</p>
+    <ul>
+        <li><strong>Same cluster:</strong> if C(x_ξ) = C(x_η), then <strong>⟨x_ξ,i⟩ R ⟨x_η,j⟩ iff i &lt; j, or (i = j and ξ &lt; η)</strong></li>
+        <li><strong>Different clusters:</strong> for distinct C(x) and C(y), <strong>⟨x,i⟩ R ⟨y,j⟩ iff xSy</strong></li>
+    </ul>
+
+    <p><em>(The board's rule for the same-cluster case is written cramped; I read it as the lexicographic rule above, and I checked that it makes R transitive, irreflexive and gives a reduction.)</em></p>
+
+    <p>The board concludes: <strong>R is transitive and irreflexive</strong>, i.e. a strict partial order, and 𝔊 is a reduct of 𝔉 = ⟨W,R⟩. The proof stops there. Here is the verification:</p>
+    <ul>
+        <li><strong>Irreflexive.</strong> Within a cluster, ⟨x_ξ,i⟩R⟨x_ξ,i⟩ would need i &lt; i, or i = i and ξ &lt; ξ. Impossible. Across clusters there is no pair with the same cluster.</li>
+        <li><strong>Transitive.</strong> Within one cluster R is a lexicographic order on pairs (i, ξ), so it is transitive. If the three points lie in three different clusters, xSy and ySz give xSz by transitivity of S. If two of them share a cluster, use that same-cluster points x ∼ y satisfy xSy (or x = y), so combining with S transitive gives the required S-relation. The case where the first and third share a cluster but the middle does not is impossible: xSy and ySz with z ∼ x would make ySx, forcing y ∼ x.</li>
+        <li><strong>Reduction f(⟨x,i⟩) = x</strong> <em>(map added by me; the board does not write it)</em>:
+            <ul>
+                <li><strong>Onto:</strong> each x has the copy ⟨x,0⟩.</li>
+                <li><strong>Forth:</strong> across clusters this is the definition. Within a cluster, ⟨x,i⟩R⟨y,j⟩ gives either x ≠ y with x ∼ y, so xSy, or x = y with i &lt; j, which can only happen in a non-degenerate cluster, where every point is reflexive, so xSx.</li>
+                <li><strong>Back:</strong> if xSz and C(z) ≠ C(x), then ⟨x,i⟩R⟨z,0⟩. If z ∈ C(x), the cluster is non-degenerate and ⟨x,i⟩R⟨z,i+1⟩ because i &lt; i+1.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <p><strong>Proof of (2) (not on the board; my derivation).</strong> A quasi-order is reflexive and transitive, so all its clusters are non-degenerate. Apply part (1) to get a strict partial order 𝔉 = ⟨W,R⟩ and the reduction f. Let R° = R ∪ {⟨w,w⟩ : w ∈ W} be the reflexive closure. Then R° is a partial order (reflexive, transitive, antisymmetric since R is strict). The map f is still a reduction: the new pairs (w,w) go to (f(w),f(w)), which is related because 𝔊 is reflexive (forth), and the back condition already held with R ⊆ R°. ∎</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a lounge (cluster) is a bunch of rooms that all see each other, which creates loops. The <strong>bulldozer</strong> flattens every lounge into an <strong>endless one-way staircase</strong> of copies of its rooms: copy 0 of every room, then copy 1 of every room, and so on, in a fixed order, with a door from every step to all later steps. Rooms in different lounges keep the same doors as before. Now nothing loops back, and squashing each copy back to its original room gives the old building.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a transitive frame can have clusters, i.e. points that see each other (and reflexive points). The bulldozer theorem says you can always <strong>replace each cluster by a strictly ordered, infinite stack of copies</strong> without changing what formulas hold, because the resulting frame reduces onto the original. The result is a <strong>strict partial order</strong>, which is a much cleaner kind of frame. Degenerate points need only one copy because they have no loop. The consequence (not stated here) is that for logics of transitive frames, one can work with strict partial orders instead.</p>
+    </blockquote>
+
+    <h2>Worked example: unraveling a 2-cycle (my own)</h2>
+    <p><strong>Frame 𝔊.</strong> V = {r, s}, S = {(r,s),(s,r)}, root r. (It is not transitive, and both points are irreflexive.)</p>
+    <ul>
+        <li><strong>Unraveling:</strong> W = all S-paths from r: ⟨r⟩, ⟨r,s⟩, ⟨r,s,r⟩, ⟨r,s,r,s⟩, … . R extends a path by one step. This is an <strong>infinite intransitive chain</strong>.</li>
+        <li><strong>Reduction map:</strong> f gives the last point: r, s, r, s, … .</li>
+        <li><strong>Check back condition:</strong> f(⟨r⟩) = r and r S s; the successor ⟨r,s⟩ maps to s ✓.</li>
+        <li><strong>Consequence:</strong> any formula valid on the infinite chain is valid on the 2-cycle (corollary of the reduction theorem). Conversely, a formula failing on the 2-cycle fails on this chain.</li>
+    </ul>
+
+    <h2>Common mistakes</h2>
+    <ol>
+        <li><strong>Forgetting the back condition of a reduction.</strong> Monotone maps are not enough. Example: the one-step chain n → n+1 does not reduce onto ② by n mod 2.</li>
+        <li><strong>Reading validity the wrong way.</strong> If f reduces 𝔉 onto 𝔊, then 𝔉 ⊨ φ implies 𝔊 ⊨ φ, <strong>not</strong> the converse. Reductions are used to <strong>refute</strong> formulas on 𝔉 by refuting them on 𝔊.</li>
+        <li><strong>Same for generated subframes:</strong> validity passes from 𝔉 <strong>down to</strong> a generated subframe, not up. (Truth at a <strong>point</strong> x passes both ways in the generation theorem.)</li>
+        <li><strong>Mixing up reflexive and irreflexive images.</strong> Reflexive points go to reflexive points, but irreflexive points may go to reflexive ones.</li>
+        <li><strong>Unraveling needs a root.</strong> Without a root, the "onto" part fails because some points are not reachable by any path from v₀.</li>
+        <li><strong>Bulldozer copies.</strong> Degenerate clusters get one copy, non-degenerate get infinitely many, and the order inside a cluster is lexicographic: <strong>first the copy index i, then the position ξ</strong>.</li>
+        <li><strong>Confusing "K is the logic of trees" with "all frames are trees".</strong> The corollaries say the <strong>set of valid formulas</strong> is the same, not that the frames are.</li>
+    </ol>
+
+    <h2>Self-test (answers below)</h2>
+    <ol>
+        <li>Show that if f is a reduction and x is reflexive, then f(x) is reflexive.</li>
+        <li>Why is the rootedness of 𝔊 needed in the unraveling theorem?</li>
+        <li>Unravel V = {r}, S = {(r,r)} (a single reflexive point). What is the intransitive tree, and what does f do?</li>
+        <li>Use Section 3 to show that Löb's formula □(□p → p) → □p is not valid on any frame in which every point has a successor.</li>
+        <li>Describe the bulldozer construction for a 2-point proper cluster {a, b} with a = x₀, b = x₁.</li>
+    </ol>
+
+    <p><strong>Answers</strong></p>
+    <ol>
+        <li>xRx gives f(x) S f(x) by the forth condition, so f(x) is reflexive.</li>
+        <li>The map f must be <strong>onto</strong> V. A point not reachable from v₀ by a finite S-path would not be the last point of any path in W, so it would not be in the image of f.</li>
+        <li>W = {⟨r⟩, ⟨r,r⟩, ⟨r,r,r⟩, …}, an infinite chain with each point R-related only to the next. f sends every path to r. (This is the reduction of the chain onto ∘, the same shape as the chain in Lecture 17.)</li>
+        <li>Such a frame reduces onto ∘ by the constant map (Section 4, Case 2). Löb's formula fails on ∘ (Lecture 17, with V(p) = ∅). Since validity passes from 𝔉 to the reduct, failure on ∘ implies failure on 𝔉.</li>
+        <li>Both points are reflexive, so each gets infinitely many copies: ⟨a,i⟩ and ⟨b,i⟩ for i = 0,1,2,… . In one cluster, ⟨x_ξ,i⟩ R ⟨x_η,j⟩ iff i &lt; j or (i = j and ξ &lt; η), so the order is ⟨a,0⟩ &lt; ⟨b,0⟩ &lt; ⟨a,1⟩ &lt; ⟨b,1⟩ &lt; … , an infinite <strong>strict linear order</strong> (an ω-chain). The map f(⟨x,i⟩) = x sends it back to the cluster.</li>
+    </ol>
+
+    <h2>One-page summary</h2>
+    <ul>
+        <li><strong>Generation theorem:</strong> truth at x is the same in a model and in a generated submodel. So <strong>validity passes down</strong> to generated subframes, and <strong>K = formulas valid on all rooted frames</strong>.</li>
+        <li><strong>Reduction (p-morphism):</strong> onto map with <strong>forth</strong> (xRy ⇒ f(x)Sf(y)) and <strong>back</strong> (f(x)Sz ⇒ ∃y: xRy, f(y)=z). For models also keep the valuation (R3).</li>
+        <li><strong>Reduction theorem:</strong> (𝔐,x) ⊨ φ iff (𝔑,f(x)) ⊨ φ. So 𝔉 ⊨ φ ⇒ 𝔊 ⊨ φ. Use it to refute.</li>
+        <li><strong>Examples:</strong> (ℕ,&lt;) reduces onto ② (n mod 2) and onto ∘ (constant). With only n → n+1 arrows, it still reduces onto ∘ but not onto ②. Reflexive points never map to irreflexive ones.</li>
+        <li><strong>Proposition:</strong> valid on some frame ⇒ valid on ∘ or on •. Dead end ⇒ generated subframe •; no dead end ⇒ constant map to ∘.</li>
+        <li><strong>Tree:</strong> R* (reflexive-transitive closure) is a tree order, i.e. each point's past is finite and linear.</li>
+        <li><strong>Unraveling:</strong> every rooted frame is a reduction image of the intransitive tree of finite paths from the root, via f = last point. So <strong>K = formulas valid on all intransitive trees</strong>.</li>
+        <li><strong>Bulldozer:</strong> every transitive frame is a reduct of a strict partial order frame (copies ⟨x,i⟩, infinitely many for non-degenerate clusters, one for degenerate ones). Every quasi-order frame is a reduct of a partial order frame.</li>
+    </ul>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
