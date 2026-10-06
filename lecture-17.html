@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lecture 17: n-step Truth, Submodels, Locality, Diagrams, Transitive Frames">
+    <title>Lecture 17: n-step Truth - ALCS Handbook</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
+
+    <h1>Lecture 17: n-step Truth, Submodels, Locality, Diagrams, Transitive Frames</h1>
+    
+    <p><strong>What this lecture covers:</strong> (1) truth of □ⁿ and ◇ⁿ, and dead ends, (2) subframes and submodels, (3) the locality theorem (a formula of degree n only sees n steps), (4) drawing conventions for frames and models, (5) worked examples, including a failing Löb-type formula, (6) a persistence result for transitive frames.</p>
+    
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every topic has three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise statement or proof (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building-with-doors story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words, without the room picture.</li>
+    </ol>
+    
+    <p><strong>Quick recap from Lecture 16:</strong> x↑ = points one step from x, x↑ⁿ = points reachable in exactly n steps (x↑⁰ = {x}), md(φ) = modal degree, □ⁿ/◇ⁿ = n boxes/diamonds. Room picture: rooms = worlds, one-way doors = R, lights = where p is true; □ = all doors lead to lit rooms, ◇ = some door does.</p>
+    
+    <p><em><strong>Notation note:</strong> this is read from handwritten board pages. Where the board is ambiguous or incomplete I say so.</em></p>
+
+    <hr>
+
+    <h2>1. Truth of □ⁿ and ◇ⁿ, and dead ends</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> For every n ≥ 0:</p>
+    <ul>
+        <li>(𝔐,x) ⊨ □ⁿψ <strong>iff</strong> (𝔐,y) ⊨ ψ <strong>for all y ∈ x↑ⁿ</strong></li>
+        <li>(𝔐,x) ⊨ ◇ⁿψ <strong>iff</strong> (𝔐,y) ⊨ ψ <strong>for some y ∈ x↑ⁿ</strong></li>
+    </ul>
+    <p>(The n = 1 case is just the truth definition of □ and ◇ from Lecture 16.)</p>
+
+    <p><strong>Empty case.</strong> If xRⁿy holds for <strong>no</strong> y, i.e. <strong>x↑ⁿ = ∅</strong>, then for <strong>every formula ψ</strong>:</p>
+    <blockquote>
+        <p>(𝔐,x) ⊨ □ⁿψ <strong>and</strong> (𝔐,x) ⊭ ◇ⁿψ.</p>
+    </blockquote>
+    <p><em>(The board writes the frame 𝔉 here, but truth needs a model, so read it as: in any model on that frame.)</em></p>
+
+    <p><strong>Dead end.</strong> A point x with <strong>no successor</strong> (there is no y with xRy) is called a <strong>dead end</strong>. For a dead end, x↑ = ∅, which is the case n = 1 above.</p>
+
+    <p><strong>Proof idea of the proposition.</strong> Induction on n. □⁰ψ = ψ and x↑⁰ = {x}, so n = 0 is trivial. For n+1: □ⁿ⁺¹ψ = □(□ⁿψ), which says "□ⁿψ holds at every one-step successor y", and by induction that says "ψ holds at every z ∈ y↑ⁿ". The points z reachable this way are exactly those in x↑ⁿ⁺¹. ◇ is the same with "some" in place of "all".</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> □ⁿp at room x: take every possible walk of exactly n doors from x; <strong>every</strong> room where a walk ends must have the p light on. ◇ⁿp: <strong>at least one</strong> such walk must end in a lit room. If there is <strong>no walk of n doors at all</strong>, then there are no end rooms to check: "all end rooms are lit" is automatically true, and "some end room is lit" is automatically false. A <strong>dead end</strong> is a room with no door out, so it has no walk even of length 1.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the proposition just says that "n boxes in a row" means "for all points exactly n steps away". It is a quantifier statement over the set x↑ⁿ. When that set is empty, we get the standard logical facts: a "for all" over an empty set is <strong>true</strong>, and a "there exists" over an empty set is <strong>false</strong>. This holds for <strong>every</strong> ψ, even ψ = ⊥. Note that x does not have to be a dead end: if a is a point with a single successor b which is itself a dead end, then a↑² = ∅, so a ⊨ □²⊥ even though a has a successor.</p>
+    </blockquote>
+
+    <h2>2. Subframes and submodels</h2>
+
+    <h3>Math</h3>
+    <p>These are defined <strong>as in intuitionistic logic</strong>. The standard definition: for a frame 𝔉 = ⟨W,R⟩ and a <strong>non-empty</strong> set X ⊆ W:</p>
+    <ul>
+        <li>the <strong>subframe induced by X</strong> is ⟨X, R ∩ (X × X)⟩ (keep the points in X and only the arrows between them)</li>
+        <li>the <strong>submodel induced by X</strong> is that subframe with valuation V′(p) = V(p) ∩ X (keep only the facts at points of X)</li>
+    </ul>
+
+    <p><strong>Key point from the board:</strong> each non-empty set X of points determines, <strong>in a unique way</strong>, the subframe and the submodel with set of worlds X. There is no choice involved. These are called <strong>the subframe and the submodel induced by X</strong>.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> pick some rooms and <strong>demolish all the others</strong>. Keep every door that connects two surviving rooms, and keep the lights as they were in the surviving rooms. The result is fully determined by which rooms you chose.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a submodel is "the model restricted to a chosen set of points". Nothing is invented: the relation is the old relation restricted to X, and each variable is true exactly where it was true before, within X. That is why the choice of X alone determines everything. Submodels matter because the next theorem compares truth in a model with truth in a well-chosen submodel.</p>
+    </blockquote>
+
+    <h2>3. The locality theorem</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> Let 𝔐 be a model, x a point in 𝔐, n ≥ 0, and 𝔑 the <strong>submodel of 𝔐 induced by the set</strong></p>
+    <blockquote>
+        <p>x↑⁰ ∪ x↑¹ ∪ … ∪ x↑ⁿ (all points within n steps of x).</p>
+    </blockquote>
+    <p>Then for <strong>every formula φ with md(φ) ≤ n</strong>:</p>
+    <blockquote>
+        <p><strong>(𝔐,x) ⊨ φ iff (𝔑,x) ⊨ φ.</strong></p>
+    </blockquote>
+
+    <p><strong>Proof.</strong> By induction on the construction of φ (with md(φ) ≤ n; the hypothesis is assumed for all points, all models and all smaller bounds).</p>
+    <ul>
+        <li><strong>Basis and φ = ψ ⊙ χ</strong> (⊙ ∈ {∧, ∨, →}): trivial. A variable or Boolean combination looks only at x itself, and x belongs to both models, with the same facts.</li>
+        <li><strong>φ = □ψ.</strong> Since md(□ψ) ≤ n, we have n ≥ 1 and <strong>md(ψ) ≤ n − 1</strong>. We show (𝔐,x) ⊭ □ψ iff (𝔑,x) ⊭ □ψ.
+            <ul>
+                <li>(𝔐,x) ⊭ □ψ iff there is <strong>y ∈ x↑ with (𝔐,y) ⊭ ψ</strong>.</li>
+                <li>Take the submodel 𝔑′ of 𝔐 induced by <strong>y↑⁰ ∪ … ∪ y↑ⁿ⁻¹</strong>. Every point within n−1 steps of y is within n steps of x (go x → y first), so 𝔑′ lives inside 𝔑.</li>
+                <li>Since md(ψ) ≤ n − 1, the induction hypothesis gives (𝔐,y) ⊭ ψ <strong>iff</strong> (𝔑′,y) ⊭ ψ <strong>iff</strong> (𝔑,y) ⊭ ψ.</li>
+                <li>Also, every y ∈ x↑ is in 𝔑 and the arrow x → y is kept, so x↑ is the same in 𝔐 and 𝔑.</li>
+                <li>Hence there is a y ∈ x↑ falsifying ψ in 𝔐 iff there is one in 𝔑, i.e. <strong>(𝔐,x) ⊭ □ψ iff (𝔑,x) ⊭ □ψ</strong>, which is the claim.</li>
+            </ul>
+        </li>
+        <li><strong>φ = ◇ψ:</strong> the board only does □. The case ◇ follows because ◇ψ ≡ ¬□¬ψ and md(¬ψ) = md(ψ); it can also be proved the same way with "some" in place of "all".</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a formula of degree n is like a person who can only <strong>peek n doors ahead</strong> from where they stand. Everything farther away is invisible to them. So you can <strong>demolish every room more than n doors from x</strong>, and the person's answer at x does not change.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this is a <strong>locality</strong> result. Whether a formula of modal degree n is true at x depends only on the points within n steps of x. The proof is natural: each modal operator moves the "viewpoint" one step further out, and the degree counts how many such moves can happen. The inductive step for □ψ reduces to a smaller problem: it passes from x with budget n to a successor y with budget n − 1, which is exactly why the induction runs on the formula and why n decreases. This is the formal reason that md was introduced in Lecture 16.</p>
+    </blockquote>
+
+    <h2>4. Drawing conventions for frames and models</h2>
+
+    <h3>Math / convention</h3>
+    <ul>
+        <li>A point that is <strong>irreflexive</strong> (not xRx) is drawn as a <strong>bullet •</strong>. A <strong>reflexive</strong> point (xRx) is drawn as a <strong>circle ∘</strong>.</li>
+        <li>Draw an <strong>arrow from x to y</strong> only if <strong>x ≠ y and xRy</strong>. (Self-loops are shown by the circle, not by an arrow.)</li>
+        <li>Frames drawn this way are <strong>assumed transitive</strong>: <strong>do not draw</strong> an arrow x → z if you already draw x → y and y → z. The missing arrow is understood.</li>
+        <li>In <strong>non-transitive</strong> frames, <strong>all arrows are shown explicitly</strong>.</li>
+        <li>When drawing <strong>models</strong>: write <strong>next to each point the formulas true there on its left, and the formulas false there on its right.</strong></li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a bullet is a room with <strong>no door back into itself</strong>; a circle is a room with a <strong>self-door</strong>. For a building with shortcut doors, the plan only shows the "step by step" doors, and you mentally add the shortcuts. For buildings without that property, every door is on the plan.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these are conventions for readability, not mathematics, but you must read them correctly. Two traps: a missing arrow in a drawn frame does <strong>not</strong> mean "no accessibility" (transitivity is assumed unless told otherwise), and a formula written on the <strong>right</strong> of a point is <strong>false</strong> there, which is the opposite of what a label like "p" next to a point might suggest.</p>
+    </blockquote>
+
+    <h2>5. Worked examples</h2>
+
+    <h3>5.1 A single irreflexive point (dead end)</h3>
+    <p><strong>Math.</strong> W = {a}, R = ∅, V(p) = ∅.</p>
+    <ul>
+        <li>a ⊨ □p, vacuously (a ⊨ □p iff ∀y (aRy ⇒ y ⊨ p), and there is no y).</li>
+        <li>a ⊭ p. So <strong>a ⊭ □p → p</strong>.</li>
+        <li>a ⊭ ◇p (iff ∃y (aRy and y ⊨ p), and there is no y). With a ⊨ □p, we get <strong>a ⊭ □p → ◇p</strong>.</li>
+    </ul>
+    
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> one room, no doors at all, light off. "All doors lead to lit rooms" is true (no doors), but the room itself is dark, so □p → p fails. And "some door leads to a lit room" is false, so □p → ◇p fails.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these two formulas are the axioms <strong>T</strong> (□p → p) and <strong>D</strong> (□p → ◇p) from your revision table. This example is a tiny model refuting both, because a dead end makes □ vacuously true. It explains why T needs reflexivity and D needs seriality (every point has a successor).</p>
+    </blockquote>
+
+    <h3>5.2 A single reflexive point, and a failing Löb-type formula</h3>
+    <p><strong>Math.</strong> W = {a}, R = {⟨a,a⟩}, V(p) = ∅.</p>
+    <ul>
+        <li>a ⊭ p, and the only successor of a is a itself, so <strong>a ⊭ □p</strong> and <strong>a ⊭ ◇p</strong>.</li>
+        <li>So <strong>a ⊨ □p → p</strong> and <strong>a ⊨ □p → ◇p</strong> (the premise □p is false).</li>
+        <li>Next, <strong>a ⊨ □(□p → p)</strong>: the only successor is a, and a ⊨ □p → p.</li>
+        <li>But a ⊭ □p. Therefore</li>
+    </ul>
+    <blockquote>
+        <p><strong>a ⊭ □(□p → p) → □p.</strong></p>
+    </blockquote>
+    
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> one room with a door back to itself, light off. Every door leads to the same dark room, so □p is false and p is false, which makes "□p → p" true. Since that holds in every room you can reach, the premise "□(□p → p)" is true, but the conclusion □p is false.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the formula □(□p → p) → □p is <strong>Löb's formula</strong> (the axiom of the logic <strong>GL</strong> from your revision notes; the lecture does not name it here). This example shows it is <strong>not valid</strong> on every frame. For GL the relevant frames must have no endless forward paths. A single reflexive point is exactly an endless path (a → a → a → …).</p>
+    </blockquote>
+
+    <h3>5.3 An infinite chain (transitive model)</h3>
+    <p><strong>Math.</strong> Take points a, b, c, … with a R b R c R …, closed under transitivity, drawn as a vertical chain, with <strong>V(p) = ∅</strong>. <em>(On the board p is written to the right of each point; by the convention in Section 4 that means p is <strong>false</strong> everywhere.)</em></p>
+    <ul>
+        <li>At every point x: p is false, and x has a successor lacking p, so □p is false.</li>
+        <li>So □p → p is <strong>true</strong> at every point. Hence <strong>□(□p → p) is true</strong> at every point (all successors satisfy □p → p).</li>
+        <li>But □p is false at every point. Therefore</li>
+    </ul>
+    <blockquote>
+        <p><strong>□(□p → p) → □p is false at every point of this transitive model.</strong></p>
+    </blockquote>
+    
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> an endless corridor of dark rooms, each with a door to the next. Everywhere, "all doors lead to lit rooms" is false, because there is always a next dark room. So □p → p is true everywhere (false premise), the premise □(□p → p) is true everywhere, but □p is false everywhere.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this repeats Example 5.2 but now the frame is <strong>transitive and irreflexive</strong>, so the failure is not due to a loop or non-transitivity. The culprit is the <strong>infinite ascending chain</strong>. This is the conversely-well-foundedness condition of GL from your revision: Löb's formula is valid on a transitive frame only if there are no infinite chains a R b R c R …</p>
+    </blockquote>
+
+    <h3>5.4 An intransitive frame where □p → □□p fails</h3>
+    <p><strong>Math.</strong> W = {a, b, c}, R = {⟨a,b⟩, ⟨b,c⟩}, V(p) = {a, b}. (Drawn: a bullet chain a → b → c, with all arrows shown since the frame is non-transitive.)</p>
+    <ul>
+        <li>a ⊨ □p: the only successor of a is b, and b ∈ V(p).</li>
+        <li>a ⊭ □□p: a → b → c and c ∉ V(p).</li>
+        <li>So <strong>a ⊭ □p → □□p.</strong></li>
+    </ul>
+    
+    <p><strong>Variant (add self-loops).</strong> R = {⟨a,b⟩, ⟨b,c⟩, ⟨a,a⟩, ⟨b,b⟩, ⟨c,c⟩}, same V. (Drawn with <strong>circles</strong> instead of bullets.)</p>
+    <ul>
+        <li>Successors of a are {a, b}, both in V(p), so a ⊨ □p.</li>
+        <li>Successors of b are {b, c}, and c ∉ V(p), so b ⊭ □p.</li>
+        <li>Since b is a successor of a, a ⊭ □□p. So again <strong>a ⊭ □p → □□p.</strong></li>
+    </ul>
+    
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a is lit and b is lit, c is dark. From a you only see b (lit), so □p holds at a. But one more door takes you from b to the dark room c, so "two doors ahead everything is lit" fails. There is no shortcut door a → c to warn you, because the building has no shortcuts.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> □p → □□p is axiom <strong>4</strong>, which corresponds to <strong>transitivity</strong>. Both frames here are <strong>not transitive</strong> (aRb and bRc but not aRc), and axiom 4 fails in both, even after adding reflexivity. This shows that reflexivity alone does not rescue it, and it motivates the next result.</p>
+    </blockquote>
+
+    <h2>6. Transitive frames: □ moves forward, ◇ moves backward</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> Let 𝔐 be a model on a <strong>transitive</strong> frame. Then for every point x and every formula ψ:</p>
+    <ol>
+        <li><strong>(𝔐,x) ⊨ □ψ ⇒ (𝔐,y) ⊨ □ψ for every y ∈ x↑</strong> (every successor of x)</li>
+        <li><strong>(𝔐,x) ⊨ ◇ψ ⇒ (𝔐,y) ⊨ ◇ψ for every y ∈ x↓</strong> (every predecessor of x)</li>
+    </ol>
+    <p><strong>Proof.</strong></p>
+    <ol>
+        <li>Contrapositive. Suppose (𝔐,y) ⊭ □ψ for some y ∈ x↑. Then there is z ∈ y↑ with (𝔐,z) ⊭ ψ. We have xRy and yRz, so by <strong>transitivity xRz</strong>, i.e. z ∈ x↑. So x has a successor falsifying ψ, hence <strong>(𝔐,x) ⊭ □ψ</strong>.</li>
+        <li>Similar. Suppose (𝔐,x) ⊨ ◇ψ and y ∈ x↓ (so yRx). There is z with xRz and z ⊨ ψ. Now yRx and xRz give <strong>yRz</strong> by transitivity, so y has a successor satisfying ψ, hence <strong>(𝔐,y) ⊨ ◇ψ</strong>.</li>
+    </ol>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> the building has shortcut doors. (1) If <strong>every door out of x</strong> leads to a lit room, and y is a room x can enter, then any room y can reach is <strong>also directly reachable from x</strong> by a shortcut, so it is lit too. So "all doors lit" holds at y as well: the property travels <strong>forward</strong>. (2) If x has a door to a lit room, then any room y with a door into x also has a <strong>shortcut</strong> straight to that lit room, so "some door is lit" travels <strong>backward</strong>.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> transitivity says "a step of a step is a step", so the set of points reachable from y is <strong>contained</strong> in the set reachable from x whenever xRy. A "for all" statement over a bigger set (x's successors) implies the same statement over the smaller set (y's successors). That is (1). A "there exists" statement transfers the other way, to anything that can reach x. That is (2). This is the semantic reason behind axiom <strong>4</strong> (□p → □□p) holding on transitive frames, and it is analogous to <strong>persistence</strong> in intuitionistic logic. It also explains Example 5.4: without transitivity, □p at a does not carry over to b.</p>
+    </blockquote>
+
+    <h2>Common mistakes</h2>
+    <ol>
+        <li><strong>Treating □ⁿ as a single step.</strong> □ⁿψ talks about points exactly n steps away (x↑ⁿ), not "within n".</li>
+        <li><strong>Forgetting vacuous truth for every ψ.</strong> If x↑ⁿ = ∅, then □ⁿψ is true and ◇ⁿψ is false even for ψ = ⊥, and x need not be a dead end.</li>
+        <li><strong>Using the locality theorem with md(φ) &gt; n.</strong> A formula deeper than n can see outside the n-step submodel.</li>
+        <li><strong>Misreading diagrams.</strong> A missing arrow in a transitive diagram is a shortcut you must add mentally. Formulas on the <strong>right</strong> of a point are <strong>false</strong>.</li>
+        <li><strong>Drawing arrows for self-loops.</strong> Reflexive points are circles, and arrows are drawn only for x ≠ y.</li>
+        <li><strong>Concluding from one example.</strong> Examples 5.2 to 5.4 show formulas <strong>failing in a given model</strong>. Validity needs all models, but one counter-model is enough to show a formula is <strong>not valid</strong>.</li>
+    </ol>
+
+    <h2>Self-test (answers below)</h2>
+    <ol>
+        <li>Frame W = {a,b}, R = {(a,b)}. Which of □²ψ and ◇²ψ is true at a? Is a a dead end?</li>
+        <li>A formula φ has md(φ) = 2. Which set of points of 𝔐 is enough to decide (𝔐,x) ⊨ φ?</li>
+        <li>On the frame W = {a,b}, R = {(a,b)}, show that □(□p → p) → □p is true at every point for <strong>every</strong> valuation V.</li>
+        <li>In Example 5.4 (first frame), verify that part (1) of Section 6 fails.</li>
+        <li>How is the frame W = {a,b,c}, R = {(a,b),(b,c),(a,c)} drawn under our conventions?</li>
+    </ol>
+
+    <p><strong>Answers</strong></p>
+    <ol>
+        <li>a↑² = ∅ (a → b, but b has no successor). So <strong>a ⊨ □²ψ</strong> for every ψ (even ⊥) and <strong>a ⊭ ◇²ψ</strong> for every ψ. a is <strong>not</strong> a dead end (it has successor b); b is the dead end.</li>
+        <li>The submodel induced by <strong>x↑⁰ ∪ x↑¹ ∪ x↑²</strong>, i.e. all points within 2 steps of x.</li>
+        <li>At b (a dead end): □p is true and □(□p → p) is vacuously true. The formula holds at b exactly when □p does, and □p is true, so the implication is true. At a: if a ⊨ □(□p → p), then b ⊨ □p → p. Since b ⊨ □p (dead end), b ⊨ p. So a ⊨ □p. Hence the implication holds at a. No assumption about V was used.</li>
+        <li>In the first frame, a ⊨ □p (b ∈ V(p)) and b ∈ a↑, but b ⊭ □p because b's successor c ∉ V(p). So □p does not persist to b, as the frame is not transitive.</li>
+        <li>As a <strong>chain a → b → c with bullets and no arrow a → c</strong>, because the frame is transitive (aRb and bRc) and all points are irreflexive. The arrow a → c is the shortcut that transitivity supplies.</li>
+    </ol>
+
+    <h2>One-page summary</h2>
+    <ul>
+        <li><strong>□ⁿψ at x:</strong> ψ at <strong>all</strong> points of x↑ⁿ. <strong>◇ⁿψ:</strong> ψ at <strong>some</strong> point of x↑ⁿ. If x↑ⁿ = ∅: □ⁿψ true, ◇ⁿψ false, for every ψ.</li>
+        <li><strong>Dead end:</strong> a point with no successor.</li>
+        <li><strong>Submodel induced by X:</strong> keep points X, restrict R to X, restrict V to X.</li>
+        <li><strong>Locality:</strong> if md(φ) ≤ n, truth of φ at x is decided by the submodel on x↑⁰ ∪ … ∪ x↑ⁿ. Proof: induction, with □ψ passing from budget n at x to budget n−1 at a successor.</li>
+        <li><strong>Drawing:</strong> bullet = irreflexive, circle = reflexive; arrow only for x ≠ y; transitive diagrams omit shortcut arrows; true formulas left of a point, false formulas right.</li>
+        <li><strong>Examples:</strong> a dead end refutes □p → p and □p → ◇p; a reflexive point and an infinite transitive chain both refute <strong>Löb's formula</strong> □(□p → p) → □p; an intransitive frame refutes □p → □□p.</li>
+        <li><strong>Transitive frames:</strong> □ψ at x passes <strong>forward</strong> to every successor; ◇ψ at x passes <strong>backward</strong> to every predecessor.</li>
+    </ul>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
