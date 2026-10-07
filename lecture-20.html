@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lecture 20: Hintikka Systems (building counter-models step by step)">
+    <title>Lecture 20: Hintikka Systems - ALCS Handbook</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
+
+    <h1>Lecture 20: Hintikka Systems (building counter-models step by step)</h1>
+    
+    <p><strong>What this lecture covers:</strong> (1) tableaux, saturated and disjoint tableaux, (2) Hintikka systems, (3) when a tableau is realizable, (4) the bound of 2^|Σ| tableaux, (5) finite counter-models for every non-theorem of K, (6) <strong>how to actually use the method</strong>, with many worked examples.</p>
+    
+    <blockquote>
+        <p><strong>Name check:</strong> the method on the board is <strong>Hintikka</strong> (not Henkin). Henkin's method builds one huge canonical model out of all maximal consistent sets. Hintikka's method builds a <strong>small counter-model for one given formula</strong>, by hand, step by step. This lecture is the second one.</p>
+    </blockquote>
+
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every definition has three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise definition (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words.</li>
+    </ol>
+    
+    <p>The practical part (Sections 5 to 8) is a <strong>procedure</strong> with a rule table, a checklist, fully worked examples and exercises, since that is where mistakes happen.</p>
+
+    <p><strong>Quick recap.</strong></p>
+    <ul>
+        <li>The language has ∧, ∨, →, ⊥, □. <strong>¬A := A → ⊥</strong> and <strong>◇A := ¬□¬A</strong>.</li>
+        <li>Truth at a point is written (𝔐,x) ⊨ ψ. As on your earlier board pages: <strong>true formulas go on the left, false formulas on the right.</strong></li>
+        <li><strong>K</strong> = the formulas valid on all frames. A formula φ is <strong>not in K</strong> exactly when some model has a point where φ is false (a <strong>counter-model</strong>).</li>
+    </ul>
+    
+    <p><strong>Notation notes and what is (not) on the board.</strong></p>
+    <ul>
+        <li>The board refers to saturation conditions <strong>(S1) to (S6)</strong> but they are <strong>not written on the pages I have</strong>. I list the standard six in Section 1 (they are the six propositional rules for ∧, ∨, → on the true and false sides).</li>
+        <li><strong>Page 3</strong> (reflexive Grz) is incomplete: the table is cut off and the picture shows only three points. I completed it in Example 3 and <strong>checked the final model by hand</strong>.</li>
+        <li><strong>Page 11</strong> is blank.</li>
+        <li>The truth lemma, and the derivations of the two corollaries, are <strong>not on the board</strong>. They are my fillings, marked as such.</li>
+    </ul>
+
+    <hr>
+
+    <h2>1. Tableaux</h2>
+
+    <h3>Math</h3>
+    <p>A <strong>tableau</strong> in the language ML is any pair <strong>t = (Γ, Δ)</strong> of subsets of Form_ML.</p>
+    <ul>
+        <li>Γ = formulas we want <strong>true</strong> (left column). Δ = formulas we want <strong>false</strong> (right column).</li>
+    </ul>
+
+    <p>A tableau is <strong>saturated</strong> if conditions (S1) to (S6) hold. <em>(Standard list; the board only refers to them.)</em></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>If this is in …</th>
+                <th>Then …</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>(S1)</td>
+                <td>A ∧ B ∈ Γ</td>
+                <td>A ∈ Γ <strong>and</strong> B ∈ Γ</td>
+            </tr>
+            <tr>
+                <td>(S2)</td>
+                <td>A ∧ B ∈ Δ</td>
+                <td>A ∈ Δ <strong>or</strong> B ∈ Δ</td>
+            </tr>
+            <tr>
+                <td>(S3)</td>
+                <td>A ∨ B ∈ Γ</td>
+                <td>A ∈ Γ <strong>or</strong> B ∈ Γ</td>
+            </tr>
+            <tr>
+                <td>(S4)</td>
+                <td>A ∨ B ∈ Δ</td>
+                <td>A ∈ Δ <strong>and</strong> B ∈ Δ</td>
+            </tr>
+            <tr>
+                <td>(S5)</td>
+                <td>A → B ∈ Γ</td>
+                <td>A ∈ Δ <strong>or</strong> B ∈ Γ</td>
+            </tr>
+            <tr>
+                <td>(S6)</td>
+                <td>A → B ∈ Δ</td>
+                <td>A ∈ Γ <strong>and</strong> B ∈ Δ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>A tableau t is <strong>disjoint</strong> if <strong>Γ ∩ Δ = ∅ and ⊥ ∉ Γ</strong>. (Nothing is both true and false, and ⊥ is never required to be true.)</p>
+    <p><strong>Order on tableaux:</strong> t ⊆ t′ means Γ ⊆ Γ′ and Δ ⊆ Δ′.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a tableau is a <strong>note about one room</strong>: a list of lights we need ON (Γ) and a list we need OFF (Δ). The note is <em>saturated</em> if it has been worked out fully (if it says "A and B must be lit", then it also says "A lit, B lit"). It is <em>disjoint</em> if it does not demand that some light is both on and off.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> a tableau is a <strong>partial description of one possible situation</strong>. Saturation says that every requirement has been unpacked into requirements about its parts. Disjointness is consistency: a contradictory note describes nothing, so that branch of the search is dead (it is "closed").</p>
+    </blockquote>
+
+    <h2>2. Hintikka systems</h2>
+
+    <h3>Math</h3>
+    <p>A <strong>Hintikka system in K</strong> is a pair <strong>𝔥 = ⟨T, S⟩</strong> where <strong>T</strong> is a non-empty set of <strong>disjoint saturated tableaux</strong> and <strong>S</strong> is a binary relation on T satisfying:</p>
+    <ul>
+        <li><strong>(HS_m1)</strong> if t = (Γ,Δ), t′ = (Γ′,Δ′) and <strong>t S t′</strong>, then <strong>ψ ∈ Γ′ for every □ψ ∈ Γ.</strong></li>
+        <li><strong>(HS_m2)</strong> if t = (Γ,Δ) and <strong>□ψ ∈ Δ</strong>, then there is <strong>t′ = (Γ′,Δ′) in T with t S t′ and ψ ∈ Δ′.</strong></li>
+    </ul>
+
+    <p><strong>Further definitions.</strong></p>
+    <ul>
+        <li>𝔥 is a <strong>Hintikka system for a tableau t</strong> if <strong>t ⊆ t′ for some t′ ∈ T</strong>.</li>
+        <li>A tableau (Γ,Δ) is <strong>realized</strong> in (a point x of) a model 𝔐 if <strong>(𝔐,x) ⊨ ψ for every ψ ∈ Γ</strong> and <strong>(𝔐,x) ⊭ ψ for every ψ ∈ Δ</strong>.</li>
+        <li>A tableau is <strong>realizable in K</strong> if it is realized in some model.</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a Hintikka system is a <strong>whole building drawn as notes</strong>: one note per room, plus doors between notes. Two rules make it a genuine building. (HS_m1, <strong>push true boxes through doors</strong>) If room t says "□ψ must be true", then every room behind a door from t must say "ψ must be lit". (HS_m2, <strong>false boxes need a witness door</strong>) If room t says "□ψ must be false", there must be <strong>at least one</strong> door from t to a room that says "ψ must be off".</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> HS_m1 and HS_m2 are exactly the truth conditions of □ read in two directions: □ψ true needs ψ true at <strong>all</strong> successors, and □ψ false needs ψ false at <strong>some</strong> successor. The set T plays the role of the worlds and S the role of the accessibility relation.</p>
+    </blockquote>
+
+    <h2>3. Why Hintikka systems work</h2>
+
+    <h3>3.1 From a Hintikka system to a counter-model</h3>
+    <p><strong>Proposition.</strong> A tableau t is realizable in K <strong>iff</strong> there is a Hintikka system for t.</p>
+    <p><strong>Proposition.</strong> If 𝔥 is a Hintikka system for <strong>(∅, {φ})</strong>, then <strong>𝔥 ⊭ φ</strong> (φ is refuted in the model built from 𝔥, so φ ∉ K).</p>
+
+    <p><strong>Proof of the "system ⇒ model" direction (my filling in, standard).</strong> Turn 𝔥 into a model: the points are the tableaux, the arrows are S, and <strong>V(p) = { (Γ,Δ) ∈ T : p ∈ Γ }</strong>. <strong>Truth lemma:</strong> for every tableau t = (Γ,Δ) ∈ T and every formula ψ,</p>
+    <blockquote>
+        <p><strong>ψ ∈ Γ ⇒ (𝔥,t) ⊨ ψ and ψ ∈ Δ ⇒ (𝔥,t) ⊭ ψ.</strong></p>
+    </blockquote>
+
+    <p>By induction on ψ.</p>
+    <ul>
+        <li><em>Variable p:</em> p ∈ Γ means t ∈ V(p). If p ∈ Δ then p ∉ Γ (disjoint), so t ∉ V(p).</li>
+        <li><em>⊥:</em> ⊥ ∉ Γ (disjoint), so only ⊥ ∈ Δ can occur, and ⊥ is false.</li>
+        <li><em>∧, ∨, →:</em> by (S1) to (S6) and induction. For example, A → B ∈ Γ gives A ∈ Δ (so A false) or B ∈ Γ (so B true), and either makes A → B true.</li>
+        <li><em>□ψ ∈ Γ:</em> for every t S t′, (HS_m1) gives ψ ∈ Γ′, which is true at t′ by induction. So □ψ is true at t.</li>
+        <li><em>□ψ ∈ Δ:</em> (HS_m2) gives t′ with t S t′ and ψ ∈ Δ′, which is false at t′. So □ψ is false at t. ∎</li>
+    </ul>
+
+    <p>Applying it to t₀ with φ ∈ Δ gives (𝔥,t₀) ⊭ φ.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> if the notes obey the four checks (saturated, disjoint, HS_m1, HS_m2), you can <strong>build the real building from the notes</strong>: rooms = notes, doors = S, a light p is on exactly in the notes that list p as ON. Every room then behaves exactly as its note says.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the construction is <strong>sound</strong>: you never need to verify the counter-model separately, since correctness is built into the four conditions. (Still, checking the final model by hand is the best way to catch your own slips.)</p>
+    </blockquote>
+
+    <h3>3.2 The size bound</h3>
+    <p><strong>Theorem.</strong> A tableau t is realizable in K <strong>iff</strong> there is a Hintikka system for t containing <strong>at most 2^|Σ| tableaux</strong>, where <strong>Σ</strong> is the set of all subformulas of the formulas in t.</p>
+
+    <p><strong>Proof ("⇒" direction, from the board).</strong> Suppose t is realized in 𝔐 = ⟨𝔉,V⟩, 𝔉 = ⟨W,R⟩. For every x ∈ W define the tableau <strong>t_x = (Γ_x, Δ_x)</strong> with</p>
+    <blockquote>
+        <p>Γ_x = { ψ ∈ Σ : x ⊨ ψ }, Δ_x = { ψ ∈ Σ : x ⊭ ψ }.</p>
+    </blockquote>
+
+    <p>Let <strong>𝔥 = ⟨T,S⟩</strong> with <strong>T = { t_x : x ∈ W }</strong> and, for t_x, t_y:</p>
+    <blockquote>
+        <p><strong>t_x S t_y iff (□ψ ∈ Γ_x implies ψ ∈ Γ_y) for all □ψ ∈ Σ.</strong></p>
+    </blockquote>
+
+    <ul>
+        <li><strong>HS_m1</strong> holds by the definition of S.</li>
+        <li><strong>HS_m2:</strong> let □ψ ∈ Δ_x. Then x ⊭ □ψ, so there is y with xRy and y ⊭ ψ. Then t_x S t_y, because if □χ ∈ Γ_x then x ⊨ □χ, so χ is true at y (as xRy), i.e. χ ∈ Γ_y. Also ψ ∈ Δ_y.</li>
+        <li>The t_x are disjoint and saturated, because they come from real truth values.</li>
+        <li>If t is realized at x₀, then t ⊆ t_{x₀}. So 𝔥 is a Hintikka system for t.</li>
+    </ul>
+
+    <p><strong>Counting.</strong> T is a <strong>set</strong> of tableaux and each t_x is determined by Γ_x ⊆ Σ (Δ_x is the rest of Σ). So <strong>|T| ≤ number of subsets of Σ = 2^|Σ|</strong>. The "⇐" direction is the previous proposition. ∎</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> take a real building and write one note per room, listing for each subformula in Σ whether it is ON or OFF there. <strong>Rooms with identical notes collapse into one</strong>, so at most 2^|Σ| notes exist, no matter how huge the building was. Doors between notes: allow a door from note A to note B whenever B contains everything that A's true boxes demand.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> this is a <strong>finite model property</strong> argument (compare filtration): only the truth values of the finitely many formulas in Σ matter, so a counter-model never needs more than 2^|Σ| points. In practice this means the search for a counter-model <strong>terminates</strong>, so K is decidable (my remark; the lecture states the bound).</p>
+    </blockquote>
+
+    <h2>4. Corollaries: finite counter-models</h2>
+
+    <p><strong>Corollary (i).</strong> For every formula <strong>φ ∉ K</strong> there is a <strong>rooted frame refuting φ with at most 2^|Sub φ| points.</strong><br>
+    <em>Why:</em> apply the theorem to t = (∅,{φ}), so Σ = Sub φ. The Hintikka system gives a frame with at most 2^|Sub φ| points refuting φ at some point. By the generation theorem (Lecture 19), the subframe generated by that point still refutes φ, and it is rooted.</p>
+
+    <p><strong>Corollary (ii).</strong> <strong>Every φ ∉ K is refuted in some finite intransitive tree.</strong><br>
+    <em>Why (my derivation, not on the board):</em> take the finite rooted counter-model from (i), unravel it into a tree (Lecture 19: a reduction preserves truth), then <strong>cut the tree at depth md(φ)</strong>, which keeps the truth of φ at the root (the locality theorem of Lecture 17). The result is a finite tree because the frame is finite and the depth is bounded.</p>
+
+    <p><strong>Corollary.</strong> <strong>K = { φ ∈ Form_ML : 𝔉 ⊨ φ for all finite intransitive trees 𝔉 }.</strong></p>
+
+    <blockquote>
+        <p><strong>Normal explanation:</strong> K can be tested on <strong>small, tree-shaped, finite</strong> frames. If a formula survives every finite intransitive tree, it is in K. This is the basis of the practical method below.</p>
+    </blockquote>
+
+    <h2>5. HOW TO USE THE METHOD: step by step</h2>
+
+    <p><strong>Goal:</strong> given a formula φ, either <strong>build a counter-model</strong> (so φ ∉ K), or show that <strong>no counter-model exists</strong> (so φ ∈ K).</p>
+
+    <h3>Step 0: Prepare the formula</h3>
+    <p>Rewrite ¬ and ◇ using the basic connectives, <strong>or</strong> use the derived rules in the table below.</p>
+    <ul>
+        <li>¬A is A → ⊥.</li>
+        <li>◇A is ¬□¬A, i.e. (□(A → ⊥)) → ⊥.</li>
+    </ul>
+
+    <h3>Step 1: Start tableau t₀</h3>
+    <p>Put <strong>φ on the right (false side)</strong>. So <strong>t₀ = (∅, {φ})</strong>. Draw a two-column table:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>t₀</th>
+                <th>TRUE (Γ)</th>
+                <th>FALSE (Δ)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td><em>(empty)</em></td>
+                <td>φ</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><em>Memory aid:</em> we are trying to make φ <strong>false</strong>, so it goes in Δ.</p>
+
+    <h3>Step 2: Saturate the tableau with the propositional rules</h3>
+    <p>Work on <strong>one tableau at a time</strong> and keep applying these until nothing new can be added.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>If you see …</th>
+                <th>Do this</th>
+                <th>Branching?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>(S1)</td>
+                <td>A ∧ B in Γ</td>
+                <td>add A, B to Γ</td>
+                <td>no</td>
+            </tr>
+            <tr>
+                <td>(S2)</td>
+                <td>A ∧ B in Δ</td>
+                <td>add A to Δ <strong>or</strong> B to Δ</td>
+                <td><strong>yes</strong></td>
+            </tr>
+            <tr>
+                <td>(S3)</td>
+                <td>A ∨ B in Γ</td>
+                <td>add A to Γ <strong>or</strong> B to Γ</td>
+                <td><strong>yes</strong></td>
+            </tr>
+            <tr>
+                <td>(S4)</td>
+                <td>A ∨ B in Δ</td>
+                <td>add A, B to Δ</td>
+                <td>no</td>
+            </tr>
+            <tr>
+                <td>(S5)</td>
+                <td>A → B in Γ</td>
+                <td>add A to Δ <strong>or</strong> B to Γ</td>
+                <td><strong>yes</strong></td>
+            </tr>
+            <tr>
+                <td>(S6)</td>
+                <td>A → B in Δ</td>
+                <td>add A to Γ <strong>and</strong> B to Δ</td>
+                <td>no</td>
+            </tr>
+            <tr>
+                <td>(¬Γ)</td>
+                <td>¬A in Γ</td>
+                <td>add A to Δ</td>
+                <td>no</td>
+            </tr>
+            <tr>
+                <td>(¬Δ)</td>
+                <td>¬A in Δ</td>
+                <td>add A to Γ</td>
+                <td>no</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><strong>Tip:</strong> do all the <strong>non-branching</strong> rules first, and use the branching ones last. Before branching, check whether the tableau already satisfies the "or" (for instance, if B is already in Γ, then (S5) is already satisfied and you do not branch).</p>
+
+    <h3>Step 3: Check for a clash (the closing test)</h3>
+    <p>A tableau <strong>clashes</strong> if some formula is in <strong>both</strong> Γ and Δ, <strong>or</strong> ⊥ is in Γ. A clash <strong>kills that branch</strong>.</p>
+    <ul>
+        <li>If you were in the middle of a <strong>branching choice</strong>, go back and try the <strong>other</strong> option.</li>
+        <li>If <strong>every</strong> choice at <strong>every</strong> branching point clashes, then <strong>no counter-model exists</strong>: <strong>φ ∈ K (valid)</strong>. Stop.</li>
+    </ul>
+
+    <h3>Step 4: Create witnesses for false boxes (HS_m2)</h3>
+    <p>For <strong>each □A in Δ</strong> of a tableau t: create a <strong>new successor tableau t′</strong> with <strong>A in its Δ′</strong>. Draw an arrow t → t′.</p>
+    <ul>
+        <li><strong>One witness per false box is enough.</strong> (A false box needs <em>some</em> successor, not all.)</li>
+        <li>Different false boxes can get different successors, or they can share one <strong>if</strong> the shared tableau stays disjoint (merging is optional, see Example 1).</li>
+    </ul>
+
+    <h3>Step 5: Push true boxes through all doors (HS_m1)</h3>
+    <p>For <strong>each □A in Γ</strong> of a tableau t and <strong>each arrow t → t′</strong> (including successors created later): add <strong>A to Γ′</strong> of t′.</p>
+
+    <h3>Step 6: Repeat on the new tableaux</h3>
+    <p>Go back to Step 2 for every tableau that received new formulas (the new successors and anything you pushed into). Then Steps 3 to 5 again. Stop when <strong>nothing changes</strong>: no clash, every false box has its witness, every true box has been pushed through every arrow.</p>
+
+    <h3>Step 7: Read off the counter-model</h3>
+    <ul>
+        <li><strong>Points</strong> = the tableaux (t₀, t₁, …).</li>
+        <li><strong>Arrows</strong> = the arrows you drew. <strong>No extra arrows</strong>, not even "shortcuts": in this method arrows are listed explicitly.</li>
+        <li><strong>V(p) = the set of tableaux with p in Γ.</strong> If an atom is in neither Γ nor Δ of a tableau, make it <strong>false</strong> (any choice works).</li>
+    </ul>
+
+    <h3>Step 8: Verify by hand (always do this)</h3>
+    <p>Evaluate φ at t₀ in your model using the truth definition. It must be <strong>false</strong>. If it is not, you missed a push (Step 5) or a witness (Step 4).</p>
+
+    <h3>Summary of the correspondence</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Hintikka condition</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2</td>
+                <td>saturation (S1 to S6)</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>disjointness (Γ ∩ Δ = ∅, ⊥ ∉ Γ)</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>HS_m2</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>HS_m1</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Extra rules for <strong>reflexive</strong> counter-models (as used on page 3)</h3>
+    <p>If the question asks for a <strong>reflexive</strong> counter-model:</p>
+    <ul>
+        <li><strong>(T-rule)</strong> if <strong>□A ∈ Γ</strong>, then also add <strong>A to Γ of the same tableau.</strong></li>
+        <li><strong>Add a loop</strong> t → t for every tableau, and make sure HS_m1 holds for the loop (this is exactly the T-rule).</li>
+        <li>Everything else stays the same. <strong>Do not make the frame transitive</strong>: the arrows are exactly the ones you drew plus the loops.</li>
+    </ul>
+
+    <h3>Derived rules for ◇ (if you prefer not to rewrite)</h3>
+    <p><em>(Derived from ◇A := (□(A → ⊥)) → ⊥ with S5, S6, HS_m1, HS_m2; checked.)</em></p>
+    <ul>
+        <li><strong>◇A ∈ Γ:</strong> create a <strong>new successor</strong> with <strong>A in its Γ′</strong>. (Some successor makes A true.)</li>
+        <li><strong>◇A ∈ Δ:</strong> add <strong>A to Δ′ for every successor</strong> t′, including later ones. (No successor makes A true.)</li>
+    </ul>
+
+    <h2>6. Worked examples</h2>
+
+    <h3>Example 1 (board, page 1): refute <strong>SC = □(□p → q) ∨ □(□q → p)</strong></h3>
+    <p><em>(A form of the "linearity" formula, my note.)</em></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>t₀: Γ = ∅, Δ = {SC}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S4) on SC ∈ Δ</td>
+                <td>Δ₀ gets □(□p→q) and □(□q→p)</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>witness for □(□p→q) ∈ Δ₀</td>
+                <td>new t₁ with (□p→q) ∈ Δ₁</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>witness for □(□q→p) ∈ Δ₀</td>
+                <td>new t₂ with (□q→p) ∈ Δ₂</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>push true boxes of t₀</td>
+                <td>Γ₀ = ∅, nothing to push</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>(S6) in t₁</td>
+                <td>□p ∈ Γ₁, q ∈ Δ₁</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>(S6) in t₂</td>
+                <td>□q ∈ Γ₂, p ∈ Δ₂</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>clash check</td>
+                <td>none</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>Tableaux: <strong>t₀</strong> (∅ | SC, □(□p→q), □(□q→p)); <strong>t₁</strong> (□p | □p→q, q); <strong>t₂</strong> (□q | □q→p, p).</p>
+    
+    <p><strong>Model:</strong> t₀ → t₁ and t₀ → t₂, with p, q false everywhere (V = ∅). <strong>Verify:</strong> t₁ is a dead end, so □p is true at t₁ while q is false, so □p → q is false at t₁. Hence □(□p→q) is false at t₀. The same at t₂ for the second disjunct. So <strong>SC is false at t₀</strong> ✓.</p>
+    
+    <p><strong>Merged model (page 2).</strong> Join t₁ and t₂ into one tableau t = (□p, □q | q, p, □p→q, □q→p). It is disjoint and still dead-ended, so t₀ → t is a <strong>2-point counter-model</strong> as well. (Merging is allowed only when the merged tableau is still disjoint.)</p>
+
+    <h3>Example 2 (board, page 2): refute <strong>Grz = □(□(p → □p) → p) → p</strong> in K</h3>
+    <p>Write A := □(□(p→□p)→p). So Grz = A → p.</p>
+    <ul>
+        <li>(S6): <strong>A ∈ Γ₀, p ∈ Δ₀.</strong></li>
+        <li>Δ₀ = {Grz, p} contains <strong>no box</strong>, so <strong>no witness is needed</strong>.</li>
+        <li>No successors, so nothing to push. No clash.</li>
+    </ul>
+    
+    <p><strong>Model:</strong> a <strong>single irreflexive point t₀</strong> with p false. <strong>Verify:</strong> A is true at a dead end (vacuous), and p is false, so A → p is false ✓. <em>(Grz is therefore not in K.)</em></p>
+
+    <h3>Example 3 (board, page 3): a <strong>reflexive</strong> counter-model for Grz</h3>
+    <p>Notation: <strong>A = □(□(p→□p)→p)</strong>, <strong>B = □(p→□p) → p</strong>.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>t₀: Δ₀ = {Grz}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S6)</td>
+                <td>A ∈ Γ₀, p ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>T-rule</strong>: A ∈ Γ₀</td>
+                <td><strong>B ∈ Γ₀</strong></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>(S5) on B ∈ Γ₀: either □(p→□p) ∈ Δ₀ or p ∈ Γ₀</td>
+                <td>p ∈ Γ₀ <strong>clashes</strong> with p ∈ Δ₀, so take <strong>□(p→□p) ∈ Δ₀</strong></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>witness for □(p→□p) ∈ Δ₀</td>
+                <td>new t₁ with <strong>(p→□p) ∈ Δ₁</strong></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>push A ∈ Γ₀ into t₁</td>
+                <td><strong>B ∈ Γ₁</strong></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>(S6) on (p→□p) ∈ Δ₁</td>
+                <td><strong>p ∈ Γ₁, □p ∈ Δ₁</strong></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>(S5) on B ∈ Γ₁: p ∈ Γ₁ already holds</td>
+                <td>no branching needed</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>witness for □p ∈ Δ₁</td>
+                <td>new t₂ with <strong>p ∈ Δ₂</strong></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>push true boxes of t₁</td>
+                <td>Γ₁ = {p, B} has no top-level box, nothing to push</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>loops</td>
+                <td>t₀, t₁, t₂ reflexive. HS_m1 for the loop at t₀ holds (B ∈ Γ₀)</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>Tableaux: <strong>t₀</strong> (A, B | Grz, p, □(p→□p)); <strong>t₁</strong> (p, B | p→□p, □p); <strong>t₂</strong> (∅ | p).</p>
+    
+    <p><strong>Model:</strong> all points reflexive, arrows <strong>t₀ → t₁ → t₂</strong>, <strong>V(p) = {t₁}</strong> (p false at t₀ and t₂, true at t₁). <em>The frame is <strong>not transitive</strong>: there is no arrow t₀ → t₂.</em> <strong>Verify:</strong> at t₁, □p is false (t₂ has no p), so p → □p is false at t₁, so □(p→□p) is false at t₀ (t₁ is a successor), so B is true at t₀. At t₁, p is true, so B is true. So A is true at t₀ (successors are t₀ and t₁). But p is false at t₀. So <strong>Grz is false at t₀</strong> ✓.</p>
+    
+    <p>⚠ <strong>Why transitivity must not be assumed:</strong> if you add the arrow t₀ → t₂, then B must hold at t₂. But p is false at t₂ and □(p→□p) is true there (t₂'s only successor is itself, where p→□p holds because p is false). So B fails at t₂ and A becomes false at t₀, and the model stops being a counter-model.</p>
+
+    <h3>Example 4 (mine): refute <strong>□(p ∨ q) → □p ∨ □q</strong> (a <strong>branching</strong> rule)</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>Δ₀ = {φ}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S6)</td>
+                <td><strong>□(p∨q) ∈ Γ₀</strong>, (□p ∨ □q) ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>(S4)</td>
+                <td>□p, □q ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>witness for □p ∈ Δ₀</td>
+                <td>t₁ with <strong>p ∈ Δ₁</strong></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>witness for □q ∈ Δ₀</td>
+                <td>t₂ with <strong>q ∈ Δ₂</strong></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>push □(p∨q)</td>
+                <td><strong>(p∨q) ∈ Γ₁</strong> and <strong>(p∨q) ∈ Γ₂</strong></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>(S3) at t₁: p ∈ Γ₁ or q ∈ Γ₁</td>
+                <td>p ∈ Γ₁ <strong>clashes</strong> with p ∈ Δ₁, so <strong>q ∈ Γ₁</strong></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>(S3) at t₂: p ∈ Γ₂ or q ∈ Γ₂</td>
+                <td>q ∈ Γ₂ <strong>clashes</strong>, so <strong>p ∈ Γ₂</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>Model:</strong> t₀ → t₁, t₀ → t₂. V(q) = {t₁}, V(p) = {t₂}. <strong>Verify:</strong> p ∨ q is true at both successors, so □(p∨q) is true at t₀. p is false at t₁ and q is false at t₂, so □p and □q are both false. So φ is false at t₀ ✓.</p>
+    
+    <p><strong>Lesson:</strong> one of the two options of a branching rule often clashes; just take the other. You only declare "valid" if <strong>both</strong> options clash.</p>
+
+    <h3>Example 5 (mine): a <strong>valid</strong> formula, so every branch closes: <strong>□(p → q) → (□p → □q)</strong> (axiom K)</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>Δ₀ = {φ}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S6)</td>
+                <td>□(p→q) ∈ Γ₀, (□p→□q) ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>(S6) again</td>
+                <td>□p ∈ Γ₀, □q ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>witness for □q ∈ Δ₀</td>
+                <td>t₁ with <strong>q ∈ Δ₁</strong></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>push both true boxes</td>
+                <td><strong>(p→q) ∈ Γ₁</strong> and <strong>p ∈ Γ₁</strong></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>(S5) on (p→q) ∈ Γ₁: p ∈ Δ₁ or q ∈ Γ₁</td>
+                <td>p ∈ Δ₁ <strong>clashes</strong> with p ∈ Γ₁; q ∈ Γ₁ <strong>clashes</strong> with q ∈ Δ₁</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>Both options clash, and every earlier step was forced</strong>, so <strong>no counter-model exists</strong> and <strong>φ ∈ K</strong> ✓. (Extra successors cannot help: the false box □q ∈ Δ₀ forces at least this witness, which already clashes.)</p>
+
+    <h3>Example 6 (mine): refute axiom 4, <strong>□p → □□p</strong>, in a <strong>reflexive</strong> model</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>Δ₀ = {□p→□□p}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S6)</td>
+                <td>□p ∈ Γ₀, □□p ∈ Δ₀</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>T-rule on □p ∈ Γ₀</td>
+                <td><strong>p ∈ Γ₀</strong></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>witness for □□p ∈ Δ₀</td>
+                <td>t₁ with <strong>□p ∈ Δ₁</strong></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>push □p from Γ₀</td>
+                <td><strong>p ∈ Γ₁</strong></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>witness for □p ∈ Δ₁</td>
+                <td>t₂ with <strong>p ∈ Δ₂</strong></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>push from Γ₁ = {p}</td>
+                <td>nothing</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>Model:</strong> reflexive points, arrows t₀ → t₁ → t₂ (<strong>no</strong> t₀ → t₂). V(p) = {t₀, t₁}. <strong>Verify:</strong> □p at t₀: successors t₀, t₁ both have p ✓. □□p at t₀: □p at t₁ needs p at t₂, which fails, so □p is false at t₁ and □□p is false at t₀. So φ is false at t₀ ✓. <em>(It shows axiom 4 is not valid on all reflexive frames, in line with 4 needing transitivity.)</em></p>
+
+    <h3>Example 7 (mine): using the ◇ rules, refute <strong>◇p → □p</strong></h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Action</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>start</td>
+                <td>Δ₀ = {◇p → □p}</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>(S6)</td>
+                <td><strong>◇p ∈ Γ₀</strong>, <strong>□p ∈ Δ₀</strong></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>◇p ∈ Γ₀: new successor</td>
+                <td>t₁ with <strong>p ∈ Γ₁</strong></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>□p ∈ Δ₀: new successor</td>
+                <td>t₂ with <strong>p ∈ Δ₂</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>Model:</strong> t₀ → t₁, t₀ → t₂, V(p) = {t₁}. <strong>Verify:</strong> ◇p is true at t₀ (t₁), □p is false at t₀ (t₂), so the implication is false ✓. <em>(t₁ and t₂ cannot be merged, because p would be in both Γ and Δ.)</em></p>
+
+    <h2>7. Common mistakes (check this list every time)</h2>
+    <ol>
+        <li><strong>Starting on the wrong side.</strong> The formula to refute goes in <strong>Δ (false)</strong>, not Γ.</li>
+        <li><strong>Handling an implication wrongly.</strong> A → B in <strong>Δ</strong> gives <strong>A in Γ and B in Δ</strong> (both things). A → B in <strong>Γ</strong> gives a <strong>choice</strong> (A in Δ or B in Γ).</li>
+        <li><strong>Forgetting to push true boxes (HS_m1) into every successor</strong>, including successors that you create <strong>later</strong>. This is the most common error. After creating a new successor, always re-push all □A from the parent's Γ.</li>
+        <li><strong>Treating a false box like a true box.</strong> □A ∈ Δ needs <strong>one</strong> successor with A in its Δ′. It does <strong>not</strong> apply to all successors.</li>
+        <li><strong>Giving up at the first clash on a branching rule.</strong> A clash only kills that <strong>option</strong>. Try the other. "Valid" is correct only if <strong>all</strong> options clash.</li>
+        <li><strong>Not checking disjointness after every step.</strong> Check Γ ∩ Δ = ∅ and ⊥ ∉ Γ in each tableau after you add formulas.</li>
+        <li><strong>Adding arrows you did not create</strong> (for example reading the picture as transitive). Arrows are exactly the ones drawn (plus loops in the reflexive case). See the warning in Example 3.</li>
+        <li><strong>Forgetting the T-rule in reflexive questions</strong>, or applying the T-rule in plain K questions. (Compare Exercise 5.)</li>
+        <li><strong>Merging successors blindly.</strong> Merge only if the result stays disjoint (Example 7 cannot merge).</li>
+        <li><strong>Reading the final model wrongly.</strong> V(p) = tableaux with p in <strong>Γ</strong>. Atoms in Δ, or in neither, are false.</li>
+        <li><strong>Skipping the final check.</strong> Always evaluate φ at t₀ in your model.</li>
+        <li><strong>Not converting ◇ and ¬</strong>, or converting them wrongly. Use the derived ◇ rules above or rewrite ◇A = ¬□¬A.</li>
+    </ol>
+
+    <h2>8. Exercises (try first, then read the solutions)</h2>
+    <ol>
+        <li>Decide: is <strong>□(p ∧ q) → □p</strong> in K? If not, give a counter-model.</li>
+        <li>Refute <strong>□p ∨ □¬p</strong> in K.</li>
+        <li>Decide: is <strong>□(p → q) → (◇p → ◇q)</strong> in K?</li>
+        <li>Refute <strong>◇p ∧ ◇q → ◇(p ∧ q)</strong> in K.</li>
+        <li>Treat <strong>□p → p</strong>: (a) refute it in K, (b) try to refute it with the reflexive rule.</li>
+        <li>Give a <strong>reflexive</strong> counter-model for <strong>p → □p</strong>.</li>
+    </ol>
+
+    <p><strong>Solutions</strong></p>
+    <ol>
+        <li><strong>t₀:</strong> (S6) gives □(p∧q) ∈ Γ₀ and □p ∈ Δ₀. Witness t₁ with p ∈ Δ₁. Push: (p∧q) ∈ Γ₁, then (S1): p, q ∈ Γ₁. <strong>Clash</strong> with p ∈ Δ₁, and there was no choice. So it is <strong>in K</strong>.</li>
+        <li><strong>t₀:</strong> Δ₀ = {□p ∨ □¬p}. (S4): □p, □¬p ∈ Δ₀. Witness t₁: p ∈ Δ₁. Witness t₂: ¬p ∈ Δ₂, so (¬Δ) p ∈ Γ₂. <strong>Model:</strong> t₀ → t₁ (p false), t₀ → t₂ (p true). Check: □p fails at t₁, □¬p fails at t₂ ✓.</li>
+        <li><strong>t₀:</strong> (S6): □(p→q) ∈ Γ₀, (◇p→◇q) ∈ Δ₀; (S6) again: <strong>◇p ∈ Γ₀, ◇q ∈ Δ₀</strong>. ◇p ∈ Γ₀: new t₁ with p ∈ Γ₁. ◇q ∈ Δ₀: <strong>q ∈ Δ for every successor</strong>, so q ∈ Δ₁. Push □(p→q): (p→q) ∈ Γ₁. (S5): p ∈ Δ₁ (clash with p ∈ Γ₁) or q ∈ Γ₁ (clash with q ∈ Δ₁). <strong>Both clash, so it is in K.</strong></li>
+        <li><strong>t₀:</strong> Γ₀ ∋ ◇p ∧ ◇q, Δ₀ ∋ ◇(p∧q). (S1): ◇p, ◇q ∈ Γ₀. Witness t₁: p ∈ Γ₁. Witness t₂: q ∈ Γ₂. ◇(p∧q) ∈ Δ₀ pushes (p∧q) ∈ Δ into <strong>every</strong> successor. (S2) at t₁: p ∈ Δ₁ (clash) or <strong>q ∈ Δ₁</strong> ✓. (S2) at t₂: <strong>p ∈ Δ₂</strong> ✓. <strong>Model:</strong> t₀ → t₁ (p true, q false), t₀ → t₂ (q true, p false). Check: ◇p, ◇q true; p∧q false at both successors, so ◇(p∧q) false ✓. (A single successor with p, q ∈ Γ would put p∧q in both Γ and Δ, which is why two successors are needed.)</li>
+        <li>(a) In K: Γ₀ ∋ □p, Δ₀ ∋ p. Δ₀ has no box, so there is no witness. <strong>Model:</strong> one dead-end point with p false (□p vacuously true). (b) With the T-rule: □p ∈ Γ₀ forces <strong>p ∈ Γ₀</strong>, which clashes with p ∈ Δ₀, with no choice. <strong>No reflexive counter-model: □p → p is valid on reflexive frames.</strong></li>
+        <li>t₀: p ∈ Γ₀, □p ∈ Δ₀. Witness t₁: p ∈ Δ₁. T-rule: Γ₀ has no box, so nothing. <strong>Model:</strong> t₀ (p true) → t₁ (p false), both reflexive. Check: □p at t₀ fails (t₁), and p true at t₀, so p → □p is false ✓.</li>
+    </ol>
+
+    <h2>One-page cheat card</h2>
+    <ul>
+        <li><strong>Tableau</strong> t = (Γ, Δ): Γ = must be <strong>true</strong>, Δ = must be <strong>false</strong>. Start: <strong>t₀ = (∅, {φ})</strong>.</li>
+        <li><strong>Saturate</strong> with S1 to S6. <strong>Branching rules:</strong> A∧B in Δ, A∨B in Γ, A→B in Γ.</li>
+        <li><strong>Clash</strong> if Γ ∩ Δ ≠ ∅ or ⊥ ∈ Γ → that branch dies. <strong>All branches die ⇒ φ ∈ K.</strong></li>
+        <li><strong>□A in Δ:</strong> make a <strong>new successor</strong> with A in Δ′ (one witness is enough).</li>
+        <li><strong>□A in Γ:</strong> put A into Γ′ of <strong>every</strong> successor (existing and future).</li>
+        <li><strong>Reflexive:</strong> □A ∈ Γ ⇒ A ∈ Γ (same tableau), add loops. Do <strong>not</strong> add transitivity arrows.</li>
+        <li><strong>◇A in Γ:</strong> new successor with A in Γ′. <strong>◇A in Δ:</strong> A in Δ′ of every successor.</li>
+        <li><strong>Read model:</strong> points = tableaux, arrows as drawn, V(p) = tableaux with p ∈ Γ. <strong>Always verify φ is false at t₀.</strong></li>
+        <li><strong>Theory:</strong> Hintikka system for (∅,{φ}) ⇒ φ refuted. Realizable ⇔ Hintikka system with ≤ 2^|Σ| tableaux. So counter-models can be <strong>finite</strong> (≤ 2^|Sub φ| points, rooted), even <strong>finite intransitive trees</strong>, and K = formulas valid on all finite intransitive trees.</li>
+    </ul>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
