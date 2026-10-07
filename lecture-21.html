@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lecture 21: Modal Frames and Formulas (frame correspondence)">
+    <title>Lecture 21: Frame Correspondence - ALCS Handbook</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --primary-color: #0d6efd;
+            --accent-color: #0dcaf0;
+            --border-color: #dee2e6;
+            --quote-bg: #e9ecef;
+            --code-bg: #e9ecef;
+            --table-header-bg: #f1f3f5;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #64b5f6;
+            --accent-color: #4dd0e1;
+            --border-color: #333333;
+            --quote-bg: #2d2d2d;
+            --code-bg: #2d2d2d;
+            --table-header-bg: #252525;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            transform: translateX(-4px);
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 3rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        blockquote {
+            background: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-style: normal;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: var(--primary-color);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        tr:last-child th, tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="nav-link">
+            <span>&larr;</span> Contents
+        </a>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="icon">🌙</span>
+            <span class="text">Dark Mode</span>
+        </button>
+    </div>
+
+    <h1>Lecture 21: Modal Frames and Formulas (frame correspondence)</h1>
+    
+    <p><strong>What this lecture covers:</strong> which <strong>formulas are valid on which frames</strong>. For each formula we find a <strong>frame condition</strong> C such that <em>𝔉 validates the formula iff 𝔉 satisfies C</em>: reflexive, transitive, symmetric, serial, the Geach family ga_{klmn}, n-transitive, dense, Euclidean, (strongly) directed, strongly connected.</p>
+    
+    <hr>
+    
+    <p><strong>How to read each section.</strong> Every topic has three layers:</p>
+    <ol>
+        <li><strong>Math:</strong> the precise statement and proof (what you write in exams).</li>
+        <li><strong>Room-and-light picture:</strong> the building-with-doors story (for intuition).</li>
+        <li><strong>Normal explanation:</strong> the same idea in ordinary words.</li>
+    </ol>
+    
+    <p>Section 1 is a <strong>recipe</strong> for finding and proving a correspondence. Use it for every formula; this is where the mistakes usually happen.</p>
+
+    <p><strong>Quick recap.</strong></p>
+    <ul>
+        <li><strong>𝔉 validates φ</strong> (𝔉 ⊨ φ) means φ is true at <strong>every point under every valuation</strong> V on 𝔉.</li>
+        <li>To <strong>show a formula is NOT valid</strong> on 𝔉, you need <strong>one</strong> valuation and <strong>one</strong> point where it is false.</li>
+        <li>To <strong>show it IS valid</strong>, you must handle <strong>all</strong> valuations.</li>
+        <li>xRⁿy means a walk of <strong>exactly n</strong> steps; xR⁰y means x = y. ◇ᵏ and □ˡ mean k diamonds and l boxes in a row (k = 0 means none).</li>
+        <li>Names used on the board: <strong>re</strong> = □p → p, <strong>tra</strong> = □p → □□p.</li>
+    </ul>
+
+    <p><strong>Notation notes and what is (not) on the board.</strong></p>
+    <ul>
+        <li>Page 2 states "validates tra iff transitive" but does <strong>not</strong> prove it; I supply the proof.</li>
+        <li>Page 5 states "validates ser iff serial". The board proves one direction (page 4); I supply the other.</li>
+        <li>The conjunction in <strong>tra_n</strong> has an index that reads <strong>i = 1</strong> (small handwriting). I checked that i = 1 matches the board's definition of n-transitive; with i = 0 it would not (see Section 7).</li>
+        <li>The words <strong>"strongly directed"</strong> and <strong>"strongly connected"</strong> are used but <strong>not defined</strong> on these pages. I give the conditions derived from the formulas and <strong>verified them</strong> (Sections 7 and 8).</li>
+        <li>The proofs for Euclidean, strongly directed, directed and SC are not on the board; they are mine.</li>
+        <li>The board writes the family as <strong>ga_{klmn}</strong>. I read it as the <strong>Geach family</strong> (the board later calls ◇□p → □◇p "the Geach formula").</li>
+    </ul>
+
+    <hr>
+
+    <h2>1. THE RECIPE: how to find and prove a frame condition</h2>
+
+    <p><strong>Goal:</strong> given a formula φ, find a condition C on R such that <strong>𝔉 ⊨ φ iff 𝔉 satisfies C</strong>.</p>
+
+    <h3>Part A: guess C by imagining a counter-model</h3>
+    <ol>
+        <li><strong>Assume a counter-model:</strong> a model on 𝔉 and a point x where <strong>φ is false</strong>: the premise (left of →) is true at x and the conclusion is false at x.</li>
+        <li><strong>Unpack with the truth definition.</strong> □ψ false at x gives a <strong>successor</strong> where ψ is false. ◇ψ true at x gives a <strong>successor</strong> where ψ is true. This creates <strong>witnesses</strong> y, z, … and facts such as "y ⊨ □ˡp" or "z ⊭ p".</li>
+        <li><strong>Find the relational facts these force</strong>, usually of the type "¬yRx" or "there is no u with …". Typical trick: if y ⊨ □p and z ⊭ p, then ¬yRz.</li>
+        <li>The <strong>configuration</strong> you found (witnesses with their forced facts) must exist in any frame refuting φ. Its <strong>negation is C.</strong></li>
+    </ol>
+
+    <h3>Part B: prove "C ⇒ valid"</h3>
+    <ol start="5">
+        <li>Assume 𝔉 satisfies C and suppose, for contradiction, a counter-model. Run step 2 again to get the witnesses and <strong>apply C</strong> to them. It gives a contradiction. (This is Part A read backwards.)</li>
+    </ol>
+
+    <h3>Part C: prove "not C ⇒ not valid" (build a counter-valuation)</h3>
+    <ol start="6">
+        <li>Assume C <strong>fails</strong>: take the <strong>bad witnesses</strong> x, y, z, … that violate C.</li>
+        <li><strong>Define V cleverly (the minimal valuation).</strong> Make the premise true using the <strong>smallest sets</strong> possible. Rules of thumb:</li>
+    </ol>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Situation</th>
+                <th>Choose V(p) = …</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>premise needs p true at x only</td>
+                <td><strong>{x}</strong></td>
+            </tr>
+            <tr>
+                <td>premise is □p and p must fail at one specific point z</td>
+                <td><strong>W ∖ {z}</strong></td>
+            </tr>
+            <tr>
+                <td>premise is ◇ᵏ□ˡp, witnessed at y</td>
+                <td><strong>{u : yRˡu}</strong> (so □ˡp holds at y, and nowhere else more than needed)</td>
+            </tr>
+            <tr>
+                <td>two variables, each tied to a different witness</td>
+                <td>one set per witness (for example V(p) = {u : yRu}, V(q) = {u : zRu})</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ol start="8">
+        <li><strong>Verify</strong> by evaluating φ at x: the premise is true, the conclusion false. Check <strong>each</strong> step (witnesses y, z really are successors, the false conclusion really fails).</li>
+    </ol>
+
+    <h3>Part D: sanity check</h3>
+    <ol start="9">
+        <li>Test C and φ on 2 to 3 tiny frames (Section 9 has ready-made ones).</li>
+    </ol>
+
+    <p><strong>Why this works.</strong> "All valuations" is a ∀ over sets. Step 7 turns that ∀ into one concrete set, and the truth definition then gives a first-order statement about R.</p>
+
+    <h2>2. re: □p → p  ⟺  reflexive</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> A frame 𝔉 validates □p → p <strong>iff 𝔉 is reflexive.</strong></p>
+
+    <p><strong>Proof.</strong></p>
+    <ul>
+        <li>(<strong>not reflexive ⇒ not valid</strong>) If 𝔉 = ⟨W,R⟩ is not reflexive, then ¬xRx for some x ∈ W. Let <strong>V(p) = W ∖ {x}</strong>. Then <strong>x ⊨ □p</strong> (every successor of x differs from x, so it lies in V(p)) and <strong>x ⊭ p</strong>. So x ⊭ □p → p.</li>
+        <li>(<strong>reflexive ⇒ valid</strong>) If 𝔉 is reflexive and the formula were false at x under some model, then x ⊨ □p and x ⊭ p. But xRx and x ⊨ □p give x ⊨ p. Contradiction. ∎</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a room has a door to itself. "All my doors lead to lit rooms" then includes the door to myself, so I must be lit too. If a room has no self-door, switch off only that room: all its doors lead to lit rooms, but the room itself is dark.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> □p → p says "necessarily p implies p", i.e. the actual world is among the possible ones. That is exactly xRx. (This is axiom T from your revision table.)</p>
+    </blockquote>
+
+    <h2>3. tra: □p → □□p  ⟺  transitive</h2>
+
+    <h3>Math</h3>
+    <p><strong>Proposition.</strong> 𝔉 validates □p → □□p <strong>iff 𝔉 is transitive.</strong> <em>(Stated on the board; proof mine.)</em></p>
+
+    <p><strong>Proof.</strong></p>
+    <ul>
+        <li>(<strong>not transitive ⇒ not valid</strong>) Let xRy, yRz, ¬xRz. Take <strong>V(p) = W ∖ {z}</strong>. Then x ⊨ □p (no successor of x is z). But y is a successor of x with y ⊭ □p (since yRz and z ⊭ p), so x ⊭ □□p.</li>
+        <li>(<strong>transitive ⇒ valid</strong>) Suppose x ⊨ □p and xRy, yRz. Then xRz, so z ⊨ p. Hence x ⊨ □□p. ∎</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> if every door from x leads to a lit room, and you walk two doors x → y → z, the room z must also be lit. That is guaranteed only if there is a <strong>shortcut door x → z</strong>.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> transitivity means a step of a step is a step. Then "p in all next states" automatically passes along two steps. (Axiom 4.)</p>
+    </blockquote>
+
+    <h2>4. sym: p → □◇p  ⟺  symmetric</h2>
+
+    <h3>Math</h3>
+    <p><strong>Necessary condition (board, pages 2 to 3).</strong> Suppose a counter-model on 𝔉 = ⟨W,R⟩. Then x ⊨ p and x ⊭ □◇p for some x. So there is a successor y (xRy) with y ⊭ ◇p. Since x ⊨ p, we must have <strong>¬yRx</strong> (otherwise y would have a successor satisfying p). So a counter-model forces <strong>∃x,y (xRy ∧ ¬yRx)</strong>.</p>
+
+    <p>Hence a <strong>sufficient condition for validity</strong> is <strong>∀x,y (xRy → yRx)</strong>. A frame satisfying it is called <strong>symmetric</strong>.</p>
+
+    <p><strong>Proposition.</strong> 𝔉 validates <strong>sym = p → □◇p iff 𝔉 is symmetric.</strong></p>
+
+    <p><strong>Proof (not symmetric ⇒ not valid, board).</strong> There are x, y with xRy and ¬yRx. Define <strong>V(p) = {x}</strong>. Then x ⊨ p. Also y ⊭ ◇p (y's successors do not include x, and p holds only at x). So x ⊭ □◇p. Hence x ⊭ p → □◇p. The other direction is the necessary-condition argument above. ∎</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> I am lit. If every door of mine has a <strong>way back</strong>, then from each neighbour I can see a lit room (me): "◇p holds at each neighbour". If a neighbour y has no door back to me, y sees nothing lit.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> "if p then necessarily possibly p": whatever else is reachable from here can come back to here. This is axiom B. Notice that V(p) = {x} is the <strong>minimal</strong> valuation: p is true only where the premise needs it.</p>
+    </blockquote>
+
+    <h2>5. ser: □p → ◇p  ⟺  serial</h2>
+
+    <h3>Math</h3>
+    <p><strong>Necessary condition (board, page 4).</strong> Suppose a counter-model: x ⊨ □p and x ⊭ ◇p for some x. Then <strong>x is a dead end</strong>: if xRy for some y, then y ⊨ p (from □p) and y ⊭ p (from ¬◇p), a contradiction. So a counter-model forces <strong>∃x ∀y ¬xRy</strong>.</p>
+
+    <p>Hence a <strong>sufficient condition</strong> for 𝔉 ⊨ □p → ◇p is <strong>seriality: ∀x ∃y xRy</strong>.</p>
+
+    <p><strong>Proposition.</strong> 𝔉 validates <strong>ser = □p → ◇p iff 𝔉 is serial.</strong><br>
+    <em>(Converse, mine:)</em> if x is a dead end, then x ⊨ □p (vacuous) and x ⊭ ◇p under <strong>any</strong> valuation, so the formula is false at x. ∎</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> a room with <strong>no door at all</strong>: "all doors lead to lit rooms" is vacuously true, but "some door leads to a lit room" is false. Every room needs at least one door out.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> □p → ◇p says "if p must hold next, then p can hold next". That is only reliable when a next state exists (seriality). This is axiom D.</p>
+    </blockquote>
+
+    <h2>6. The Geach family ga_{klmn} = ◇ᵏ□ˡp → □ᵐ◇ⁿp</h2>
+
+    <h3>Math</h3>
+    <p>Consider the <strong>family</strong> of formulas</p>
+    <blockquote>
+        <p><strong>ga_{klmn} = ◇ᵏ □ˡ p → □ᵐ ◇ⁿ p,</strong>  where k, l, m, n are arbitrary natural numbers, possibly 0.</p>
+    </blockquote>
+
+    <p><strong>Proposition.</strong> 𝔉 = ⟨W,R⟩ validates ga_{klmn} <strong>iff</strong></p>
+    <blockquote>
+        <p><strong>∀x,y,z ( xRᵏy ∧ xRᵐz → ∃u ( yRˡu ∧ zRⁿu ) ).</strong></p>
+    </blockquote>
+
+    <p><strong>Proof.</strong></p>
+    <ul>
+        <li>(<strong>condition ⇒ valid</strong>, board page 5). Suppose a counter-model: x ⊨ ◇ᵏ□ˡp and x ⊭ □ᵐ◇ⁿp. Then there are y, z with <strong>xRᵏy, y ⊨ □ˡp</strong> and <strong>xRᵐz, z ⊭ ◇ⁿp</strong>. If some u had yRˡu and zRⁿu, then u ⊨ p (from y ⊨ □ˡp), so z ⊨ ◇ⁿp, a contradiction. So <strong>no u</strong> with yRˡu and zRⁿu exists. This violates the condition at (x,y,z). So if the condition holds, there is no counter-model.</li>
+        <li>(<strong>not condition ⇒ not valid</strong>, board page 6). Suppose the condition fails: there are x, y, z with xRᵏy, xRᵐz, and for every u, <strong>¬yRˡu or ¬zRⁿu</strong>. Define <strong>V(p) = { u ∈ W : yRˡu }</strong>. Then y ⊨ □ˡp, so <strong>x ⊨ ◇ᵏ□ˡp</strong>. There is no u with zRⁿu and u ∈ V(p) (that would give yRˡu and zRⁿu), so z ⊭ ◇ⁿp and <strong>x ⊭ □ᵐ◇ⁿp</strong>. So ga_{klmn} is false at x. ∎</li>
+    </ul>
+
+    <h3>Special cases (my computation from the condition)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Formula</th>
+                <th>(k,l,m,n)</th>
+                <th>Condition becomes</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>□p → p</td>
+                <td>(0,1,0,0)</td>
+                <td>xRx</td>
+                <td>reflexive</td>
+            </tr>
+            <tr>
+                <td>□p → □□p</td>
+                <td>(0,1,2,0)</td>
+                <td>xR²z → xRz</td>
+                <td>transitive</td>
+            </tr>
+            <tr>
+                <td>p → □◇p</td>
+                <td>(0,0,1,1)</td>
+                <td>xRz → zRx</td>
+                <td>symmetric</td>
+            </tr>
+            <tr>
+                <td>□p → ◇p</td>
+                <td>(0,1,0,1)</td>
+                <td>∃u xRu</td>
+                <td>serial</td>
+            </tr>
+            <tr>
+                <td>◇□p → □p</td>
+                <td>(1,1,1,0)</td>
+                <td>xRy ∧ xRz → yRz</td>
+                <td>Euclidean</td>
+            </tr>
+            <tr>
+                <td>◇□p → □◇p</td>
+                <td>(1,1,1,1)</td>
+                <td>xRy ∧ xRz → ∃u(yRu ∧ zRu)</td>
+                <td>strongly directed</td>
+            </tr>
+            <tr>
+                <td>□ⁿ⁺¹p → □ⁿp</td>
+                <td>(0,n+1,n,0)</td>
+                <td>xRⁿz → xRⁿ⁺¹z</td>
+                <td>n-dense</td>
+            </tr>
+            <tr>
+                <td>p → □p</td>
+                <td>(0,0,1,0)</td>
+                <td>xRz → z = x</td>
+                <td>R inside identity</td>
+            </tr>
+            <tr>
+                <td>◇p → □p</td>
+                <td>(1,0,1,0)</td>
+                <td>xRy ∧ xRz → y = z</td>
+                <td>R functional</td>
+            </tr>
+            <tr>
+                <td>◇p → □◇p</td>
+                <td>(1,0,1,1)</td>
+                <td>xRy ∧ xRz → zRy</td>
+                <td>Euclidean</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><em>(For k = 0 or m = 0, "xR⁰y" just means x = y, so the variables collapse.)</em></p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> the formula says "if from x I can walk k doors to a room y from which all l-door walks are lit, then from x, after m doors to any z, I can reach a lit room in n doors". The condition says: from y (l steps) and from z (n steps) you can <strong>always reach a common room u</strong>. Then a lit room reachable from y must also be reachable from z.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> the family is a template. One proof handles all of T, 4, B, D, 5-style, confluence and density at once. In the literature these are the <strong>Geach (Lemmon–Scott)</strong> formulas, and they are special cases of <strong>Sahlqvist</strong> formulas (my remark, from your revision notes). The key idea is the minimal valuation V(p) = {u : yRˡu}.</p>
+    </blockquote>
+
+    <h2>7. n-transitive, dense, n-dense, Euclidean</h2>
+
+    <h3>n-transitive (board, page 7)</h3>
+    <p><strong>Definition.</strong> 𝔉 is <strong>n-transitive</strong> if <strong>∀x,y ( xRⁿ⁺¹y → xRy ∨ xR²y ∨ … ∨ xRⁿy )</strong>.</p>
+    <p><strong>Corollary.</strong> 𝔉 validates <strong>tra_n = ⋀_{i=1}^{n} □ⁱp → □ⁿ⁺¹p</strong> iff 𝔉 is n-transitive.</p>
+
+    <p><strong>Proof (mine).</strong></p>
+    <ul>
+        <li>(n-transitive ⇒ valid) Let x ⊨ □ⁱp for i = 1..n and xRⁿ⁺¹z. Then xRⁱz for some i ≤ n, so z ⊨ p. Hence x ⊨ □ⁿ⁺¹p.</li>
+        <li>(not n-transitive ⇒ not valid) Take xRⁿ⁺¹z with ¬xRⁱz for all i = 1..n. Let <strong>V(p) = W ∖ {z}</strong>. Then x ⊨ □ⁱp for i = 1..n (z is not reachable in i steps), but z is reachable in n+1 steps and z ⊭ p, so x ⊭ □ⁿ⁺¹p. ∎</li>
+    </ul>
+
+    <p><strong>n = 1</strong> gives □p → □□p and "transitive".<br>
+    <em>(Check on the index:)</em> with i starting at <strong>0</strong> the formula would be p ∧ □p → □□p, which is valid on the <strong>2-cycle</strong> {a,b} with R = {(a,b),(b,a)}, a frame that is <strong>not</strong> transitive (aRb, bRa, ¬aRa). So i = 1 is the right reading.</p>
+
+    <h3>Dense and n-dense (board, page 7)</h3>
+    <p><strong>Definition.</strong> <strong>Dense:</strong> ∀x,y (xRy → xR²y). <strong>n-dense:</strong> ∀x,y (xRⁿy → xRⁿ⁺¹y).</p>
+    <p><strong>Corollary.</strong> 𝔉 validates <strong>den_n = □ⁿ⁺¹p → □ⁿp</strong> iff 𝔉 is n-dense. <em>(An instance of ga_{0,n+1,n,0}.)</em></p>
+    <p><strong>n = 0:</strong> xR⁰y → xR¹y, i.e. x = y → xRx, which is <strong>reflexive</strong> (and □p → p). <strong>n = 1:</strong> □□p → □p ⟺ dense.</p>
+
+    <h3>Euclidean (board, page 8)</h3>
+    <p><strong>Definition.</strong> <strong>Euclidean:</strong> ∀x,y,z (xRy ∧ xRz → yRz). (Two successors of the same point see each other, in that direction.)</p>
+    <p><strong>Corollary.</strong> 𝔉 validates <strong>euc = ◇□p → □p</strong> iff 𝔉 is Euclidean.</p>
+
+    <p><strong>Proof (mine, same pattern).</strong></p>
+    <ul>
+        <li>(Euclidean ⇒ valid) If x ⊨ ◇□p, pick y with xRy, y ⊨ □p. For any z with xRz, Euclidean gives yRz, so z ⊨ p. So x ⊨ □p.</li>
+        <li>(not Euclidean ⇒ not valid) Take xRy, xRz, ¬yRz. Let <strong>V(p) = {u : yRu}</strong>. Then y ⊨ □p, so x ⊨ ◇□p. But z ∉ V(p) (as ¬yRz), so x ⊭ □p. ∎</li>
+    </ul>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> <strong>n-transitive:</strong> a walk of n+1 doors can be replaced by a walk of at most n doors from the same start. <strong>Dense:</strong> every door x → y can be <strong>split</strong> into two doors x → z → y (you can squeeze a room in between). <strong>Euclidean:</strong> if x has doors to y and to z, then <strong>y has a door to z</strong> (siblings see each other).</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these are variations on the same theme: "paths can be shortened" (n-transitive), "paths can be lengthened" (dense), "two successors of one point are related" (Euclidean). In each case the proof is the same: counter-model gives witnesses, and the minimal valuation shows the converse.</p>
+    </blockquote>
+
+    <h2>8. Directedness and strong connectedness</h2>
+
+    <h3>Strongly directed (board, page 8)</h3>
+    <p><strong>Corollary.</strong> 𝔉 ⊨ <strong>◇□p → □◇p</strong> iff 𝔉 is <strong>strongly directed</strong>, i.e.</p>
+    <blockquote>
+        <p><strong>∀x,y,z ( xRy ∧ xRz → ∃u ( yRu ∧ zRu ) ).</strong></p>
+    </blockquote>
+    <p><em>(The board does not write this out; it is the ga_{1,1,1,1} condition, and the board calls this formula "the Geach formula".)</em></p>
+
+    <h3>Directed (board, page 8)</h3>
+    <p><strong>Directedness condition:</strong> <strong>∀x,y,z ( xRy ∧ xRz ∧ y ≠ z → ∃u ( yRu ∧ zRu ) ).</strong></p>
+    <p><strong>Proposition.</strong> 𝔉 ⊨ <strong>dir = ◇(□p ∧ q) → □(◇p ∨ q)</strong> iff 𝔉 is <strong>directed</strong>.</p>
+
+    <p><strong>Proof (mine).</strong></p>
+    <ul>
+        <li>(directed ⇒ valid) Suppose a counter-model at x. Then some successor y has □p ∧ q, and some successor z has ¬◇p ∧ ¬q. Since q holds at y and fails at z, <strong>y ≠ z</strong>. By directedness there is u with yRu and zRu. Then u ⊨ p (from y ⊨ □p), so z ⊨ ◇p, a contradiction.</li>
+        <li>(not directed ⇒ not valid) Take xRy, xRz, y ≠ z with no common successor. Let <strong>V(p) = {u : yRu}</strong> and <strong>V(q) = {y}</strong>. Then y ⊨ □p ∧ q, so x ⊨ ◇(□p ∧ q). Point z has q false (z ≠ y) and no successor in V(p) (no common successor), so z ⊭ ◇p ∨ q and x ⊭ □(◇p ∨ q). ∎</li>
+    </ul>
+
+    <p><strong>Difference:</strong> <em>strongly</em> directed also applies to the case <strong>y = z</strong>, so it requires every successor y of x to have <strong>a successor</strong> (take z = y: ∃u yRu). <em>Directed</em> does not.</p>
+
+    <h3>Strongly connected (board, page 9)</h3>
+    <p><strong>Proposition.</strong> 𝔉 validates <strong>SC = □(□p → q) ∨ □(□q → p)</strong> iff 𝔉 is <strong>strongly connected</strong>, i.e. <em>(derived and verified, not written on the board)</em>:</p>
+    <blockquote>
+        <p><strong>∀x,y,z ( xRy ∧ xRz → yRz ∨ zRy ).</strong></p>
+    </blockquote>
+
+    <p><strong>Proof (mine).</strong></p>
+    <ul>
+        <li>(condition ⇒ valid) Suppose SC is false at x. Then there are successors y, z with y ⊨ □p, y ⊭ q, and z ⊨ □q, z ⊭ p. By the condition yRz or zRy. If yRz, then y ⊨ □p gives z ⊨ p, a contradiction. If zRy, then z ⊨ □q gives y ⊨ q, a contradiction.</li>
+        <li>(condition fails ⇒ not valid) Take xRy, xRz, ¬yRz, ¬zRy. Let <strong>V(p) = {u : yRu}</strong> and <strong>V(q) = {u : zRu}</strong>. Then y ⊨ □p and y ⊭ q (as ¬zRy), so x ⊭ □(□p → q). Also z ⊨ □q and z ⊭ p (as ¬yRz), so x ⊭ □(□q → p). Hence x ⊭ SC. ∎</li>
+    </ul>
+
+    <p><strong>Note the case y = z.</strong> The condition then says <strong>yRy</strong>: every successor of x must see itself. That is exactly why the <strong>merged model of Lecture 20</strong> (t₀ → t, with t irreflexive) refutes SC.</p>
+
+    <blockquote>
+        <p><strong>Room-and-light picture:</strong> <strong>Directed:</strong> two different rooms reachable from x can always <strong>meet again</strong> in a common room. <strong>Strongly connected:</strong> any two rooms behind doors of x (the same room twice included) are connected by a door one way or the other. A "fork" (x with two rooms y, z that do not see each other) breaks both.</p>
+    </blockquote>
+    <blockquote>
+        <p><strong>Normal explanation:</strong> these are the conditions behind <strong>confluence/.2</strong> and <strong>linearity/.3</strong> axioms (my remark: S4.2 and S4.3 in the literature). Both refuse "forks": branches must reconverge (directed) or be comparable (strongly connected).</p>
+    </blockquote>
+
+    <h2>9. Overview tables</h2>
+
+    <h3>9.1 Correspondences</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Formula</th>
+                <th>Name</th>
+                <th>Frame condition</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>□p → p</td>
+                <td>re (T)</td>
+                <td>reflexive</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>□p → □□p</td>
+                <td>tra (4)</td>
+                <td>transitive</td>
+                <td>board (stated), proof mine</td>
+            </tr>
+            <tr>
+                <td>p → □◇p</td>
+                <td>sym (B)</td>
+                <td>symmetric</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>□p → ◇p</td>
+                <td>ser (D)</td>
+                <td>serial</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>◇ᵏ□ˡp → □ᵐ◇ⁿp</td>
+                <td>Geach family</td>
+                <td>xRᵏy ∧ xRᵐz → ∃u(yRˡu ∧ zRⁿu)</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>⋀_{i=1}^{n}□ⁱp → □ⁿ⁺¹p</td>
+                <td>tra_n</td>
+                <td>n-transitive</td>
+                <td>board, proof mine</td>
+            </tr>
+            <tr>
+                <td>□ⁿ⁺¹p → □ⁿp</td>
+                <td>den_n</td>
+                <td>n-dense</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>◇□p → □p</td>
+                <td>euc</td>
+                <td>Euclidean</td>
+                <td>board, proof mine</td>
+            </tr>
+            <tr>
+                <td>◇□p → □◇p</td>
+                <td>Geach (.2)</td>
+                <td>strongly directed</td>
+                <td>board</td>
+            </tr>
+            <tr>
+                <td>◇(□p∧q) → □(◇p∨q)</td>
+                <td>dir</td>
+                <td>directed</td>
+                <td>board, proof mine</td>
+            </tr>
+            <tr>
+                <td>□(□p→q) ∨ □(□q→p)</td>
+                <td>SC</td>
+                <td>strongly connected</td>
+                <td>board, proof mine</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>9.2 Frame test (use it to check your understanding)</h3>
+    <p>Frames: <strong>F1</strong> = a → b. <strong>F2</strong> = one reflexive point. <strong>F3</strong> = two points, universal relation. <strong>F4</strong> = (ℕ, &lt;). <strong>F5</strong> = fork a → b, a → c. <strong>C2</strong> = 2-cycle a ⇄ b (no loops).</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>F1</th>
+                <th>F2</th>
+                <th>F3</th>
+                <th>F4</th>
+                <th>F5</th>
+                <th>C2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>reflexive</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+            </tr>
+            <tr>
+                <td>transitive</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+            </tr>
+            <tr>
+                <td>symmetric</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✓</td>
+            </tr>
+            <tr>
+                <td>serial</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✓</td>
+            </tr>
+            <tr>
+                <td>Euclidean</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+            </tr>
+            <tr>
+                <td>dense</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+            </tr>
+            <tr>
+                <td>strongly directed</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✓</td>
+            </tr>
+            <tr>
+                <td>directed (y ≠ z)</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✓</td>
+            </tr>
+            <tr>
+                <td>strongly connected</td>
+                <td>✗</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><em>(Also: C2 is 2-transitive but not transitive.)</em></p>
+
+    <p><strong>Facts relating the conditions (mine, checked).</strong></p>
+    <ul>
+        <li><strong>Reflexive + Euclidean ⇒ symmetric.</strong> (xRy and xRx give yRx by Euclid.)</li>
+        <li><strong>Symmetric + Euclidean ⇒ transitive.</strong> (xRy, yRz: yRx by symmetry, then Euclid at y gives xRz.)</li>
+        <li>So <strong>reflexive + Euclidean ⇒ equivalence relation</strong> (the S5 case from your revision).</li>
+    </ul>
+
+    <h2>10. Worked examples (using the recipe)</h2>
+
+    <h3>Example 1: find the condition for <strong>p → □p</strong></h3>
+    <ul>
+        <li><strong>Part A.</strong> Counter-model: x ⊨ p and x ⊭ □p, so some successor y has y ⊭ p. Since x ⊨ p, <strong>y ≠ x</strong>. Forced configuration: <strong>xRy with y ≠ x</strong>. So C = <strong>∀x,y (xRy → y = x)</strong> (R ⊆ identity).</li>
+        <li><strong>Part B.</strong> Under C, any successor of x is x itself; but x ⊨ p, so □p holds. No counter-model. ✓</li>
+        <li><strong>Part C.</strong> If xRy with y ≠ x: <strong>V(p) = {x}</strong>. Then x ⊨ p, y ⊭ p, so x ⊭ □p. The formula is false at x. ✓</li>
+        <li><em>(Check with the table: it is the ga_{0,0,1,0} case.)</em></li>
+    </ul>
+
+    <h3>Example 2: find the condition for <strong>◇p → □p</strong></h3>
+    <ul>
+        <li><strong>Part A.</strong> Counter-model: x ⊨ ◇p gives a successor y ⊨ p; x ⊭ □p gives a successor z ⊭ p. So <strong>y ≠ z</strong>. Forced configuration: <strong>xRy, xRz, y ≠ z</strong>. C = <strong>∀x,y,z (xRy ∧ xRz → y = z)</strong> (R is functional: at most one successor).</li>
+        <li><strong>Part C.</strong> If xRy, xRz, y ≠ z: <strong>V(p) = {y}</strong>. Then x ⊨ ◇p, z ⊭ p, so x ⊭ □p. ✓</li>
+    </ul>
+
+    <h3>Example 3: use the Geach condition for <strong>□p → ◇◇p</strong></h3>
+    <p>Here <strong>□p = ◇⁰□¹p</strong> (k=0, l=1) and <strong>◇◇p = □⁰◇²p</strong> (m=0, n=2), so (0,1,0,2). The condition: xR⁰y ∧ xR⁰z → ∃u (yR¹u ∧ zR²u). Since y = z = x: <strong>∀x ∃u (xRu ∧ xR²u)</strong> (every point has a successor that is also a 2-step successor).<br>
+    <strong>Direct check of Part C:</strong> if this fails at x, set <strong>V(p) = x↑</strong>. Then x ⊨ □p. A point u with xR²u and u ⊨ p would be in x↑ ∩ x↑², which is empty. So x ⊭ ◇◇p. ✓</p>
+
+    <h3>Example 4: evaluate on frames (using the table)</h3>
+    <p><strong>Which of the formulas re, tra, sym, ser are valid on F1 (a → b)?</strong><br>
+    From the table: transitive ✓ ⇒ tra valid. Not reflexive, not symmetric, not serial ⇒ re, sym, ser <strong>not</strong> valid.<br>
+    <em>Refute sym on F1 explicitly:</em> <strong>V(p) = {a}</strong>: a ⊨ p, b is a dead end so b ⊭ ◇p, hence a ⊭ □◇p and a ⊭ p → □◇p. ✓</p>
+
+    <h3>Example 5: tie-in with Lecture 20</h3>
+    <p>The <strong>fork F5</strong> (a → b, a → c) is the frame of Lecture 20's first counter-model for SC. In terms of Section 8, it violates strong connectedness (b and c do not see each other) and also directedness. <em>Refute dir on F5 explicitly:</em> x = a, y = b, z = c. <strong>V(p) = {u : bRu} = ∅, V(q) = {b}.</strong> Then b ⊨ □p (dead end) and q, so a ⊨ ◇(□p ∧ q). At c: ◇p is false (no successors) and q is false, so c ⊭ ◇p ∨ q, hence a ⊭ □(◇p ∨ q). ✓</p>
+
+    <h2>11. Common mistakes (check this list every time)</h2>
+    <ol>
+        <li><strong>Mixing "validates" and "true in a model".</strong> Validity needs <strong>all valuations</strong>. A single model where the formula is true proves nothing about validity.</li>
+        <li><strong>Choosing V arbitrarily.</strong> To refute validity, choose the <strong>minimal valuation</strong> from the table in Section 1 and <strong>verify</strong> both the premise and the failed conclusion.</li>
+        <li><strong>Forgetting the case y = z</strong> (or y = x) in conditions: strong connectedness requires yRy, and "strongly directed" requires every successor to have a successor. <em>Directed</em> excludes y = z; <em>strongly directed</em> does not.</li>
+        <li><strong>Confusing the conditions:</strong> T → reflexive, D → serial, 4 → transitive, B → symmetric, ◇□p → □p → Euclidean, ◇□p → □◇p → strongly directed. Check by running Part A once.</li>
+        <li><strong>Treating xRⁿy as "within n steps".</strong> It means <strong>exactly n steps</strong> (and xR⁰y means x = y). That is why n-transitive and n-dense have the shapes they have.</li>
+        <li><strong>Reading the n-transitive axiom with i = 0.</strong> That gives a different (weaker) formula (see the 2-cycle in Section 7).</li>
+        <li><strong>Proving only one direction.</strong> Each correspondence is an "iff": show C ⇒ valid <strong>and</strong> not C ⇒ not valid.</li>
+        <li><strong>Confusing necessary and sufficient.</strong> A counter-model <em>forces</em> a configuration (necessary for failure). Its negation is therefore <em>sufficient</em> for validity. The converse needs Part C.</li>
+        <li><strong>Wrong witness bookkeeping.</strong> □ψ false gives <em>one</em> successor where ψ fails. ◇ψ true gives <em>one</em> successor where ψ holds. Never "all".</li>
+        <li><strong>Assuming transitivity when drawing frames.</strong> Draw all arrows explicitly when testing conditions such as Euclidean or n-transitive.</li>
+    </ol>
+
+    <h2>12. Exercises (try first, then read the solutions)</h2>
+    <ol>
+        <li>Use the recipe to find the frame condition of <strong>◇p → □◇p</strong>. Compare with Euclidean.</li>
+        <li>Show that the <strong>2-cycle C2</strong> validates □□□p ∧ □□p ∧ □p → □⁴... no: show that C2 is <strong>2-transitive</strong> and state which formula it therefore validates.</li>
+        <li>Give a valuation refuting <strong>□p → □□p</strong> on the frame <strong>a → b → c</strong> with <strong>R = {(a,b),(b,c)}</strong> (not transitive), at the point a.</li>
+        <li>Is <strong>□p → ◇p</strong> valid on <strong>F5</strong> (the fork)? Give a refutation if not.</li>
+        <li>On which of F1 to F5, C2 is <strong>□□p → □p</strong> valid? (Use the table.)</li>
+        <li>Prove that <strong>p → □p</strong> is valid on F2 (one reflexive point) and refute it on <strong>F3</strong> (two points, universal relation).</li>
+    </ol>
+
+    <p><strong>Solutions</strong></p>
+    <ol>
+        <li>◇p → □◇p = ga_{1,0,1,1}. <strong>Part A:</strong> counter-model: x ⊨ ◇p gives y ⊨ p with xRy; x ⊭ □◇p gives z with xRz and z ⊭ ◇p. Then <strong>¬zRy</strong> (else z would have a successor satisfying p). Forced: xRy, xRz, ¬zRy. <strong>C = ∀x,y,z (xRy ∧ xRz → zRy)</strong>, which is <strong>Euclidean</strong> (rename y ↔ z). <strong>Part C:</strong> if xRy, xRz, ¬zRy, set <strong>V(p) = {y}</strong>: x ⊨ ◇p, and z ⊭ ◇p (its successors do not include y), so x ⊭ □◇p. ✓</li>
+        <li>C2 has R = {(a,b),(b,a)}, so R³ = R (odd lengths go to the other point) and R² = {(a,a),(b,b)}. Check 2-transitivity: xR³y → xRy ∨ xR²y: if aR³b then aRb ✓; if bR³a then bRa ✓. So <strong>C2 is 2-transitive</strong> and therefore validates <strong>tra₂ = □p ∧ □²p → □³p</strong>. It is <strong>not</strong> transitive (aRb, bRa, ¬aRa), so it does <strong>not</strong> validate □p → □□p. <em>(Refutation: V(p) = {b}... take x = a, y = b, z = a... check: a ⊨ □p (only successor b ∈ V(p)), and a ⊭ □□p since b's successor a ∉ V(p). ✓)</em></li>
+        <li>Take <strong>V(p) = {b}</strong>... careful: a ⊨ □p needs all successors of a to satisfy p: b ∈ V(p) ✓. □□p at a needs □p at b: b's successor is c; with c ∉ V(p), b ⊭ □p. So a ⊭ □□p. <strong>V(p) = {b}</strong> works (equivalently W ∖ {c} = {a,b}, also works). ✓</li>
+        <li><strong>No, it is not valid.</strong> F5 is not serial (b and c are dead ends). At b: □p is vacuously true and ◇p is false for any V, so <strong>b ⊭ □p → ◇p</strong> (even for V = ∅). ✓</li>
+        <li>□□p → □p is valid iff the frame is <strong>dense</strong>. From the table: <strong>F2 and F3 only</strong> (dense ✓). It is not valid on F1, F4, F5 or C2. <em>(E.g. F4: 0 &lt; 1 but 0R²1 fails; set V(p) = W ∖ {1}: 0 ⊨ □□p (the points two steps away are 2,3,… which satisfy p) while 0 ⊭ □p since 1 ∉ V(p).)</em></li>
+        <li><strong>F2</strong> (aRa only): R ⊆ identity, so the condition of Example 1 holds, hence valid. Direct: if a ⊨ p then a ⊨ □p, since the only successor is a. <strong>F3</strong> (points a₁, a₂, universal): a₁R a₂ with a₂ ≠ a₁. <strong>V(p) = {a₁}</strong>: a₁ ⊨ p but a₂ ⊭ p, so a₁ ⊭ □p. ✓</li>
+    </ol>
+
+    <h2>One-page summary</h2>
+    <ul>
+        <li><strong>Frame validity = truth under all valuations.</strong> Refute with <strong>one</strong> minimal valuation, prove with all.</li>
+        <li><strong>Recipe:</strong> (A) assume a counter-model, unpack into witnesses, read off the forced configuration, negate it to get C. (B) C ⇒ valid by running A backwards. (C) not C ⇒ build V (minimal valuation) and verify. (D) sanity-check on small frames.</li>
+        <li><strong>Key correspondences:</strong> □p→p reflexive; □p→□□p transitive; p→□◇p symmetric; □p→◇p serial; ◇□p→□p (and ◇p→□◇p) Euclidean; ◇□p→□◇p strongly directed; □ⁿ⁺¹p→□ⁿp n-dense; ⋀_{i=1}^{n}□ⁱp→□ⁿ⁺¹p n-transitive; □(□p→q)∨□(□q→p) strongly connected; ◇(□p∧q)→□(◇p∨q) directed.</li>
+        <li><strong>Geach family:</strong> ◇ᵏ□ˡp → □ᵐ◇ⁿp ⟺ ∀x,y,z (xRᵏy ∧ xRᵐz → ∃u (yRˡu ∧ zRⁿu)), with minimal valuation V(p) = {u : yRˡu}.</li>
+        <li><strong>Watch:</strong> y = z cases, "exactly n steps", both directions of each iff.</li>
+        <li><strong>Links:</strong> Lecture 20's SC counter-models (fork, and the merged irreflexive point) are exactly frames violating strong connectedness.</li>
+    </ul>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const iconSpan = toggleBtn.querySelector('.icon');
+        const textSpan = toggleBtn.querySelector('.text');
+        
+        // Check for saved theme preference or use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Light Mode';
+            } else {
+                iconSpan.textContent = '🌙';
+                textSpan.textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize theme
+        setTheme(getPreferredTheme());
+
+        // Toggle theme on click
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
